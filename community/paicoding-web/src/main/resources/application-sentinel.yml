@@ -1,0 +1,24 @@
+spring:
+  cloud:
+    openfeign:
+      sentinel:
+        enabled: true
+      client:
+        config:
+          default:
+            connectTimeout: ${FEIGN_CONNECT_TIMEOUT_MS:1000}
+            readTimeout: ${FEIGN_READ_TIMEOUT_MS:3000}
+            loggerLevel: basic
+    sentinel:
+      enabled: ${SENTINEL_ENABLED:true}
+      eager: ${SENTINEL_EAGER:false}
+      transport:
+        dashboard: ${SENTINEL_DASHBOARD:127.0.0.1:8858}
+      log:
+        dir: ${SENTINEL_LOG_DIR:${java.io.tmpdir}/paicoding-sentinel}
+
+# Spring Cloud Alibaba 2023 activates its SentinelFeign.Builder with this
+# compatibility property (it is intentionally not under spring.cloud).
+feign:
+  sentinel:
+    enabled: true

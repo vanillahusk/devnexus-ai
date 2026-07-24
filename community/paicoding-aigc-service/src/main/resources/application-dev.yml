@@ -1,0 +1,8 @@
+spring:
+  application:
+    name: aigc-service
+
+ai:
+  knowledge:
+    service:
+      token: paicoding-aigc-dev-token

@@ -1,0 +1,131 @@
+{
+  "annotations": {"list": []},
+  "editable": true,
+  "graphTooltip": 1,
+  "id": null,
+  "links": [],
+  "panels": [
+    {
+      "datasource": {"type": "prometheus", "uid": "prometheus"},
+      "fieldConfig": {"defaults": {"unit": "percentunit"}, "overrides": []},
+      "gridPos": {"h": 8, "w": 12, "x": 0, "y": 0},
+      "id": 1,
+      "targets": [{"expr": "process_cpu_usage{job=~\"$job\"}", "legendFormat": "{{instance}}", "refId": "A"}],
+      "title": "Process CPU Usage",
+      "type": "timeseries"
+    },
+    {
+      "datasource": {"type": "prometheus", "uid": "prometheus"},
+      "fieldConfig": {"defaults": {"unit": "bytes"}, "overrides": []},
+      "gridPos": {"h": 8, "w": 12, "x": 12, "y": 0},
+      "id": 2,
+      "targets": [
+        {"expr": "sum by (instance) (jvm_memory_used_bytes{job=~\"$job\",area=\"heap\"})", "legendFormat": "used {{instance}}", "refId": "A"},
+        {"expr": "sum by (instance) (jvm_memory_max_bytes{job=~\"$job\",area=\"heap\"})", "legendFormat": "max {{instance}}", "refId": "B"}
+      ],
+      "title": "JVM Heap Used / Max",
+      "type": "timeseries"
+    },
+    {
+      "datasource": {"type": "prometheus", "uid": "prometheus"},
+      "fieldConfig": {"defaults": {}, "overrides": []},
+      "gridPos": {"h": 8, "w": 12, "x": 0, "y": 8},
+      "id": 3,
+      "targets": [
+        {"expr": "jvm_threads_live_threads{job=~\"$job\"}", "legendFormat": "live {{instance}}", "refId": "A"},
+        {"expr": "jvm_threads_daemon_threads{job=~\"$job\"}", "legendFormat": "daemon {{instance}}", "refId": "B"},
+        {"expr": "jvm_threads_peak_threads{job=~\"$job\"}", "legendFormat": "peak {{instance}}", "refId": "C"}
+      ],
+      "title": "JVM Threads",
+      "type": "timeseries"
+    },
+    {
+      "datasource": {"type": "prometheus", "uid": "prometheus"},
+      "fieldConfig": {"defaults": {"unit": "s"}, "overrides": []},
+      "gridPos": {"h": 8, "w": 12, "x": 12, "y": 8},
+      "id": 4,
+      "targets": [{"expr": "sum by (instance,action) (rate(jvm_gc_pause_seconds_sum{job=~\"$job\"}[5m]))", "legendFormat": "{{action}} {{instance}}", "refId": "A"}],
+      "title": "GC Pause Rate",
+      "type": "timeseries"
+    },
+    {
+      "datasource": {"type": "prometheus", "uid": "prometheus"},
+      "fieldConfig": {"defaults": {}, "overrides": []},
+      "gridPos": {"h": 8, "w": 12, "x": 0, "y": 16},
+      "id": 5,
+      "targets": [
+        {"expr": "hikaricp_connections_active{job=~\"$job\"}", "legendFormat": "active {{instance}}", "refId": "A"},
+        {"expr": "hikaricp_connections_idle{job=~\"$job\"}", "legendFormat": "idle {{instance}}", "refId": "B"},
+        {"expr": "hikaricp_connections_pending{job=~\"$job\"}", "legendFormat": "pending {{instance}}", "refId": "C"},
+        {"expr": "hikaricp_connections_max{job=~\"$job\"}", "legendFormat": "max {{instance}}", "refId": "D"}
+      ],
+      "title": "HikariCP Connections",
+      "type": "timeseries"
+    },
+    {
+      "datasource": {"type": "prometheus", "uid": "prometheus"},
+      "fieldConfig": {"defaults": {"unit": "s"}, "overrides": []},
+      "gridPos": {"h": 8, "w": 12, "x": 12, "y": 16},
+      "id": 6,
+      "targets": [
+        {"expr": "histogram_quantile(0.95, sum by (le,instance) (rate(http_server_requests_seconds_bucket{job=~\"$job\"}[5m])))", "legendFormat": "p95 {{instance}}", "refId": "A"},
+        {"expr": "histogram_quantile(0.99, sum by (le,instance) (rate(http_server_requests_seconds_bucket{job=~\"$job\"}[5m])))", "legendFormat": "p99 {{instance}}", "refId": "B"}
+      ],
+      "title": "HTTP P95 / P99",
+      "type": "timeseries"
+    },
+    {
+      "datasource": {"type": "prometheus", "uid": "prometheus"},
+      "fieldConfig": {"defaults": {}, "overrides": []},
+      "gridPos": {"h": 8, "w": 12, "x": 0, "y": 24},
+      "id": 7,
+      "targets": [
+        {"expr": "executor_active_threads{job=~\"$job\"}", "legendFormat": "active {{name}} {{instance}}", "refId": "A"},
+        {"expr": "executor_queued_tasks{job=~\"$job\"}", "legendFormat": "queued {{name}} {{instance}}", "refId": "B"},
+        {"expr": "executor_pool_core_threads{job=~\"$job\"}", "legendFormat": "core {{name}} {{instance}}", "refId": "C"},
+        {"expr": "executor_pool_max_threads{job=~\"$job\"}", "legendFormat": "max {{name}} {{instance}}", "refId": "D"}
+      ],
+      "title": "Executor Active / Queue / Capacity",
+      "type": "timeseries"
+    },
+    {
+      "datasource": {"type": "prometheus", "uid": "prometheus"},
+      "fieldConfig": {"defaults": {}, "overrides": []},
+      "gridPos": {"h": 8, "w": 12, "x": 12, "y": 24},
+      "id": 8,
+      "targets": [
+        {"expr": "jdbc_connections_active{job=~\"$job\"}", "legendFormat": "active {{name}} {{instance}}", "refId": "A"},
+        {"expr": "jdbc_connections_idle{job=~\"$job\"}", "legendFormat": "idle {{name}} {{instance}}", "refId": "B"},
+        {"expr": "jdbc_connections_max{job=~\"$job\"}", "legendFormat": "max {{name}} {{instance}}", "refId": "C"},
+        {"expr": "jdbc_connections_min{job=~\"$job\"}", "legendFormat": "min {{name}} {{instance}}", "refId": "D"}
+      ],
+      "title": "JDBC Connection Pool (generic)",
+      "type": "timeseries"
+    }
+  ],
+  "refresh": "5s",
+  "schemaVersion": 39,
+  "tags": ["jvm", "hikari", "spring-boot"],
+  "templating": {
+    "list": [
+      {
+        "current": {"selected": true, "text": "paicoding-.*", "value": "paicoding-.*"},
+        "datasource": {"type": "prometheus", "uid": "prometheus"},
+        "definition": "label_values(up, job)",
+        "includeAll": true,
+        "label": "Service",
+        "multi": true,
+        "name": "job",
+        "query": {"query": "label_values(up, job)", "refId": "StandardVariableQuery"},
+        "refresh": 1,
+        "regex": "/paicoding-.*/",
+        "type": "query"
+      }
+    ]
+  },
+  "time": {"from": "now-1h", "to": "now"},
+  "timezone": "browser",
+  "title": "Paicoding JVM and Service Overview",
+  "uid": "paicoding-jvm-service-overview",
+  "version": 1
+}

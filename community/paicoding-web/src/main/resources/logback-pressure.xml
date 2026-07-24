@@ -1,0 +1,24 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!--
+  本机压测专用：不创建文件 Appender，避免逐请求/逐消息日志干扰吞吐并放大 WSL 写盘。
+  通过 dev,pressure profile 自动启用；生产仍使用 logback-spring.xml。
+-->
+<configuration>
+    <appender name="STDOUT" class="ch.qos.logback.core.ConsoleAppender">
+        <filter class="ch.qos.logback.classic.filter.ThresholdFilter">
+            <level>WARN</level>
+        </filter>
+        <encoder>
+            <pattern>%d{HH:mm:ss.SSS} [%thread] %-5level %logger{48} - %msg%n</pattern>
+            <charset>UTF-8</charset>
+        </encoder>
+    </appender>
+
+    <logger name="com.github.paicoding.forum" level="WARN"/>
+    <logger name="org.apache.ibatis" level="WARN"/>
+    <logger name="org.springframework" level="WARN"/>
+
+    <root level="WARN">
+        <appender-ref ref="STDOUT"/>
+    </root>
+</configuration>

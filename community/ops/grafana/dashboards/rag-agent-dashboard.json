@@ -1,0 +1,117 @@
+{
+  "annotations": {"list": []},
+  "editable": true,
+  "graphTooltip": 1,
+  "id": null,
+  "links": [],
+  "panels": [
+    {
+      "datasource": {"type": "prometheus", "uid": "prometheus"},
+      "fieldConfig": {"defaults": {"color": {"mode": "palette-classic"}}, "overrides": []},
+      "gridPos": {"h": 7, "w": 8, "x": 0, "y": 0},
+      "id": 1,
+      "options": {"legend": {"displayMode": "list", "placement": "bottom", "showLegend": true}, "tooltip": {"mode": "multi", "sort": "desc"}},
+      "targets": [{"editorMode": "code", "expr": "rag_index_outbox_events", "legendFormat": "{{status}}", "range": true, "refId": "A"}],
+      "title": "Knowledge Outbox Backlog",
+      "type": "timeseries"
+    },
+    {
+      "datasource": {"type": "prometheus", "uid": "prometheus"},
+      "fieldConfig": {"defaults": {"color": {"mode": "palette-classic"}, "unit": "s"}, "overrides": []},
+      "gridPos": {"h": 7, "w": 8, "x": 8, "y": 0},
+      "id": 2,
+      "options": {"legend": {"displayMode": "list", "placement": "bottom", "showLegend": true}, "tooltip": {"mode": "multi", "sort": "desc"}},
+      "targets": [
+        {"editorMode": "code", "expr": "histogram_quantile(0.95, sum by (le) (rate(rag_index_sync_latency_seconds_bucket[10m])))", "legendFormat": "sync p95", "range": true, "refId": "A"},
+        {"editorMode": "code", "expr": "histogram_quantile(0.95, sum by (le, result) (rate(rag_index_processing_duration_seconds_bucket[5m])))", "legendFormat": "processing p95 {{result}}", "range": true, "refId": "B"}
+      ],
+      "title": "Index Synchronization Latency",
+      "type": "timeseries"
+    },
+    {
+      "datasource": {"type": "prometheus", "uid": "prometheus"},
+      "fieldConfig": {"defaults": {"color": {"mode": "palette-classic"}}, "overrides": []},
+      "gridPos": {"h": 7, "w": 8, "x": 16, "y": 0},
+      "id": 3,
+      "options": {"legend": {"displayMode": "list", "placement": "bottom", "showLegend": true}, "tooltip": {"mode": "multi", "sort": "desc"}},
+      "targets": [
+        {"editorMode": "code", "expr": "sum by (result) (rate(rag_embedding_chunks_total[5m]))", "legendFormat": "chunks {{result}}", "range": true, "refId": "A"},
+        {"editorMode": "code", "expr": "sum by (status) (rate(rag_embedding_batches_total[5m]))", "legendFormat": "batches {{status}}", "range": true, "refId": "B"}
+      ],
+      "title": "Chunk and Embedding Throughput",
+      "type": "timeseries"
+    },
+    {
+      "datasource": {"type": "prometheus", "uid": "prometheus"},
+      "fieldConfig": {"defaults": {"color": {"mode": "palette-classic"}, "unit": "s"}, "overrides": []},
+      "gridPos": {"h": 7, "w": 8, "x": 0, "y": 7},
+      "id": 4,
+      "options": {"legend": {"displayMode": "list", "placement": "bottom", "showLegend": true}, "tooltip": {"mode": "multi", "sort": "desc"}},
+      "targets": [{"editorMode": "code", "expr": "histogram_quantile(0.95, sum by (le, stage) (rate(rag_retrieval_stage_duration_seconds_bucket[5m])))", "legendFormat": "{{stage}} p95", "range": true, "refId": "A"}],
+      "title": "Retrieval Stage P95",
+      "type": "timeseries"
+    },
+    {
+      "datasource": {"type": "prometheus", "uid": "prometheus"},
+      "fieldConfig": {"defaults": {"color": {"mode": "palette-classic"}, "unit": "percentunit", "min": 0, "max": 1}, "overrides": []},
+      "gridPos": {"h": 7, "w": 8, "x": 8, "y": 7},
+      "id": 5,
+      "options": {"legend": {"displayMode": "list", "placement": "bottom", "showLegend": true}, "tooltip": {"mode": "multi", "sort": "desc"}},
+      "targets": [
+        {"editorMode": "code", "expr": "sum(rate(rag_retrieval_requests_total{outcome=\"refused\"}[5m])) / clamp_min(sum(rate(rag_retrieval_requests_total[5m])), 0.001)", "legendFormat": "refusal", "range": true, "refId": "A"},
+        {"editorMode": "code", "expr": "sum(rate(rag_retrieval_degraded_total[5m])) / clamp_min(sum(rate(rag_retrieval_requests_total[5m])), 0.001)", "legendFormat": "degradation", "range": true, "refId": "B"}
+      ],
+      "title": "Refusal and Degradation Ratio",
+      "type": "timeseries"
+    },
+    {
+      "datasource": {"type": "prometheus", "uid": "prometheus"},
+      "fieldConfig": {"defaults": {"color": {"mode": "palette-classic"}}, "overrides": []},
+      "gridPos": {"h": 7, "w": 8, "x": 16, "y": 7},
+      "id": 6,
+      "options": {"legend": {"displayMode": "list", "placement": "bottom", "showLegend": true}, "tooltip": {"mode": "multi", "sort": "desc"}},
+      "targets": [
+        {"editorMode": "code", "expr": "sum by (capability) (rag_model_calls_inflight)", "legendFormat": "inflight {{capability}}", "range": true, "refId": "A"},
+        {"editorMode": "code", "expr": "sum by (capability, reason) (rate(rag_model_calls_rejected_total[5m]))", "legendFormat": "rejected {{capability}}/{{reason}}", "range": true, "refId": "B"}
+      ],
+      "title": "Model Bulkhead and Rejections",
+      "type": "timeseries"
+    },
+    {
+      "datasource": {"type": "prometheus", "uid": "prometheus"},
+      "fieldConfig": {"defaults": {"color": {"mode": "palette-classic"}}, "overrides": []},
+      "gridPos": {"h": 7, "w": 12, "x": 0, "y": 14},
+      "id": 7,
+      "options": {"legend": {"displayMode": "list", "placement": "bottom", "showLegend": true}, "tooltip": {"mode": "multi", "sort": "desc"}},
+      "targets": [
+        {"editorMode": "code", "expr": "sum by (mode, outcome) (rate(rag_agent_requests_total[5m]))", "legendFormat": "{{mode}}/{{outcome}}", "range": true, "refId": "A"},
+        {"editorMode": "code", "expr": "sum by (reason) (increase(rag_agent_terminations_total[10m]))", "legendFormat": "termination {{reason}}", "range": true, "refId": "B"}
+      ],
+      "title": "Agent Outcomes and Controlled Terminations",
+      "type": "timeseries"
+    },
+    {
+      "datasource": {"type": "prometheus", "uid": "prometheus"},
+      "fieldConfig": {"defaults": {"color": {"mode": "palette-classic"}}, "overrides": []},
+      "gridPos": {"h": 7, "w": 12, "x": 12, "y": 14},
+      "id": 8,
+      "options": {"legend": {"displayMode": "list", "placement": "bottom", "showLegend": true}, "tooltip": {"mode": "multi", "sort": "desc"}},
+      "targets": [
+        {"editorMode": "code", "expr": "rate(rag_agent_steps_sum[5m]) / clamp_min(rate(rag_agent_steps_count[5m]), 0.001)", "legendFormat": "steps/request", "range": true, "refId": "A"},
+        {"editorMode": "code", "expr": "rate(rag_agent_tool_calls_sum[5m]) / clamp_min(rate(rag_agent_tool_calls_count[5m]), 0.001)", "legendFormat": "tools/request", "range": true, "refId": "B"},
+        {"editorMode": "code", "expr": "rate(rag_agent_tokens_sum[5m]) / clamp_min(rate(rag_agent_tokens_count[5m]), 0.001)", "legendFormat": "tokens/request", "range": true, "refId": "C"}
+      ],
+      "title": "Agent Average Budget Usage",
+      "type": "timeseries"
+    }
+  ],
+  "refresh": "15s",
+  "schemaVersion": 39,
+  "tags": ["rag", "agent", "embedding", "retrieval"],
+  "templating": {"list": []},
+  "time": {"from": "now-1h", "to": "now"},
+  "timezone": "browser",
+  "title": "RAG and Controlled Agent",
+  "uid": "paicoding-rag-agent",
+  "version": 1
+}

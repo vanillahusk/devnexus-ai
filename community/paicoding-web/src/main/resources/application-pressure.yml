@@ -1,0 +1,30 @@
+# 仅用于本机真实业务链路压测。生产默认限流语义不受影响。
+favor:
+  rate-limit:
+    enabled: true
+    window-seconds: 60
+    max-requests: 100000
+  flush-fixed-delay-ms: 100
+  persist-retry-fixed-delay-ms: 1000
+  notify-retry-fixed-delay-ms: 1000
+  counter-flush-fixed-delay-ms: 500
+
+paicoding:
+  comment:
+    async-enabled: true
+    rate-limit:
+      enabled: true
+      limit: 100000
+      window-seconds: 1
+      key-expire-seconds: 2
+
+logging:
+  config: classpath:logback-pressure.xml
+  level:
+    root: WARN
+    com.github.paicoding: WARN
+    org.apache.ibatis: WARN
+
+mybatis-plus:
+  configuration:
+    log-impl: org.apache.ibatis.logging.nologging.NoLoggingImpl

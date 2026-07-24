@@ -1,0 +1,28 @@
+id	title	shortTitle	summary	content	online	deleted
+1001	RocketMQ可靠消息与Outbox	可靠消息	本地消息表解决业务提交后消息丢失问题	业务数据和Outbox在同一MySQL事务提交，调度器条件抢占后投递RocketMQ，消费者通过eventId幂等。	true	false
+1002	RocketMQ消息积压排查	消息积压	介绍Broker恢复和消费积压处理	先观察消费延迟和队列深度，再扩容消费者并确认下游数据库容量，恢复后验证积压归零。	true	false
+1003	Redis可靠队列设计	可靠队列	pending和processing避免任务丢失	事件从pending原子移动到processing，成功后ACK，失败时保留并由恢复任务重新处理。	true	false
+1004	点赞取消的乱序保护	点赞乱序	使用操作版本避免旧事件覆盖新状态	同一用户的点赞和取消事件携带递增version，数据库只接受更新版本。	true	false
+1005	评论异步写入与审核	评论链路	RocketMQ削峰和PENDING审核状态	评论请求发布到RocketMQ，消费者写Redis可靠队列，批量落库后等待审核。	true	false
+1006	MySQL联合索引与评论树	索引优化	评论树查询索引字段顺序分析	联合索引包含article_id、audit_status、deleted、top_comment_id和id，可减少扫描和排序。	true	false
+1007	Sentinel熔断与业务降级	服务治理	认证和消息服务采用不同降级语义	通知查询可返回空结果，认证服务异常必须fail closed拒绝未知身份。	true	false
+1008	Nacos服务注册与配置刷新	Nacos治理	注册发现与动态配置是不同能力	Gateway和Feign按服务名发现实例，RefreshScope支持配置值在线刷新。	true	false
+1009	OpenFeign超时与Fallback	Feign治理	远程HTTP调用必须设置超时和降级	连接超时和读取超时限制资源占用，FallbackFactory根据业务语义返回结果。	true	false
+1010	SkyWalking追踪RocketMQ异步链路	异步Trace	关联Producer和Consumer Span	Java Agent将Trace上下文写入消息属性，消费者建立异步Span并在拓扑中关联RocketMQ。	true	false
+1011	Prometheus业务指标设计	指标监控	监控Outbox和消息队列状态	Micrometer暴露pending、retry、dead、发送成功率和恢复耗时，Prometheus负责抓取与告警。	true	false
+1012	Java动态线程池调优	线程池	隔离持久化和通知任务	根据队列深度调整core和max线程数，拒绝策略不能静默丢失可靠任务。	true	false
+1013	RAG混合检索与RRF融合	混合检索	BM25和Dense向量互补	关键词召回适合类名与错误码，向量召回适合语义改写，RRF融合后再进行精排。	true	false
+1014	Markdown结构化分块	文档分块	按标题路径和代码块切分文章	Chunk保存articleId、version、headingPath和contentHash，代码块尽量保持完整。	true	false
+1015	受控Agent工具调用	Agent边界	只读白名单工具和最大步骤数	单Agent最多执行三步和两次检索，重复工具调用触发终止并降级到普通RAG。	true	false
+1016	Prompt注入防护	AI安全	外部资料不能提升为系统指令	用户问题和检索文档都属于不可信输入，工具参数需要再次校验并限制权限。	true	false
+1017	Redis与MySQL缓存一致性	缓存对账	数据库是最终事实源	异步写入失败时事件保留在processing，定时对账根据MySQL版本修复Redis状态。	true	false
+1018	RocketMQ死信与修正重放	DLQ重放	毒消息修正后保留原eventId	消息超过重试阈值进入DLQ，人工修正载荷后使用原eventId重新发布。	true	false
+1019	消息幂等与Effectively Once	消费幂等	至少一次投递允许物理重复	PROCESSING防止并发处理，COMPLETED拦截历史重复，幂等记录存在明确TTL边界。	true	false
+1020	为什么当前项目不用Seata	Seata取舍	Outbox满足最终一致性场景	核心业务仍在单库本地事务内，跨RocketMQ通知接受最终一致性，不需要分布式事务协调器。	true	false
+1021	Dubbo与OpenFeign如何选择	RPC选型	当前服务规模使用HTTP更易调试	Feign是声明式HTTP客户端，Dubbo提供RPC能力，但同时维护两套调用体系会增加复杂度。	true	false
+1022	AI回答的SSE流式输出	SSE输出	metadata delta done事件协议	有界线程池执行AI任务，SseEmitter依次发送元数据、答案分片和完成事件。	true	false
+1023	WSL低资源Docker验证	低资源验证	限制堆内存写盘和运行边界	服务串行启动，Prometheus限制保留时间，临时存储和自动清理降低WSL压力。	true	false
+1024	Grafana告警与看板	Grafana	JVM线程池连接池和业务指标	看板查询Prometheus，告警覆盖Outbox死信、消息积压和评论可靠队列。	true	false
+1025	评论树缓存与版本失效	评论树	两级缓存避免热点查询	文章评论版本进入缓存Key，变更后递增版本，新请求自然读取新快照。	true	false
+1026	尚未发布的向量检索草稿	内部草稿	不应该被在线知识助手检索	这是一篇未上线文章，仅用于验证状态过滤。	false	false
+1027	已经删除的历史文章	删除文章	不应该出现在任何检索结果	这是一篇逻辑删除文章，仅用于验证删除过滤。	true	true

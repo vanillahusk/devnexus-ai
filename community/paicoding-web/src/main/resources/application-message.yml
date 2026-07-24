@@ -1,0 +1,9 @@
+message:
+  service:
+    mode: local
+    baseUrl: http://localhost:8095
+    readInternalPath: /internal/message/notify
+    commandInternalPath: /internal/message/notify/command
+    tokenHeader: X-MESSAGE-INTERNAL-TOKEN
+    userIdHeader: X-MESSAGE-USER-ID
+    token:

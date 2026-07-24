@@ -1,0 +1,45 @@
+# Build outputs
+**/target/
+**/build/
+**/dist/
+**/coverage/
+**/.vite/
+**/node_modules/
+
+# Runtime data and logs
+**/logs/
+**/.runtime/
+**/temp/
+**/scripts/logs/
+*.log
+*.pid
+*.hprof
+*.jfr
+hs_err_pid*
+
+# Local configuration and credentials
+**/.env
+**/.env.*
+!**/.env.example
+*.pem
+*.key
+*.p12
+*.jks
+
+# IDE and operating-system files
+**/.idea/
+**/.vscode/
+**/.claude/
+*.iml
+.DS_Store
+Thumbs.db
+*:Zone.Identifier
+
+# Temporary files
+*.tmp
+*.bak
+*.swp
+*~
+
+# Locally generated validation reports
+community/docs/perf/*.md

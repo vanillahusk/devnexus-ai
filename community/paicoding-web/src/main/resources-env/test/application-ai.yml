@@ -1,0 +1,98 @@
+net:
+  proxy:
+    # 代理相关信息
+    - ip: 127.0.0.1
+      port: 1080
+      type: SOCKS
+
+
+# AI 知识助手
+ai:
+  knowledge:
+    enabled: true
+    memoryLimit: 6
+    recallArticleLimit: 3
+    recallCommentLimit: 3
+    recallConfigLimit: 20
+    configPrefix: ai.knowledge.
+    service:
+      mode: local
+      baseUrl: http://localhost:8080
+      assistantInternalPath: /internal/aigc/assistant
+      adminInternalPath: /internal/aigc/admin/knowledge
+      tokenHeader: X-AIGC-INTERNAL-TOKEN
+      userIdHeader: X-AIGC-USER-ID
+      token:
+    route:
+      primary: ragent
+      fallback: local
+    ragent:
+      enabled: false
+      autoSync: false
+      baseUrl: http://localhost:9090/api/ragent
+      chatPath: /rag/v3/chat
+      token:
+      username:
+      password:
+      kbName: paicoding-community-kb
+      embeddingModel: qwen-emb-8b
+      collectionName: paicodingcommunitykb
+      connectTimeoutMs: 500
+      readTimeoutMs: 2500
+      chunkWaitTimeoutMs: 60000
+      chunkPollIntervalMs: 500
+    generationRebuild:
+      enabled: false
+      batchSize: 100
+      maxCatchupRounds: 10
+      maxArticles: 100000
+    api:
+      enabled: false
+      baseUrl: https://api.openai.com
+      chatPath: /v1/chat/completions
+      apiKey:
+      model: gpt-4o-mini
+      useProxy: true
+      temperature: 0.2
+      maxTokens: 1500
+      systemPrompt: 你是社区 AI 知识助手，请优先根据给定的社区资料回答，如果资料不足请明确说明不确定，不要编造。
+      connectTimeoutMs: 500
+      readTimeoutMs: 3000
+    governance:
+      maxConcurrentCalls: 16
+      failureThreshold: 5
+      openDurationMs: 30000
+      slowCallThresholdMs: 2500
+
+
+# chatgpt
+chatgpt:
+  main: CHAT_GPT_3_5
+  conf:
+    CHAT_GPT_3_5:
+      keys:
+        - # 这里输入你的key
+      proxy: true # 表示走上面的代理进行访问
+      apiHost: https://api.openai.com/
+      timeOut: 900
+      maxToken: 3000
+    CHAT_GPT_4:
+      keys:
+        -
+      proxy: true
+      apiHost: https://api.openai.com/
+      timeOut: 900
+      maxToken: 200000
+  number:
+    # 普通用户
+    normal: 50
+    vip: 100
+
+
+
+# 讯飞AI
+xunfei:
+  hostUrl: http://spark-api.xf-yun.com/v1.1/chat
+  appId:
+  apiKey:
+  apiSecret:

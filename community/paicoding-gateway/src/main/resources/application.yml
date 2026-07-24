@@ -1,0 +1,99 @@
+server:
+  port: 10010
+
+spring:
+  application:
+    name: paicoding-gateway
+  cloud:
+    compatibility-verifier:
+      enabled: false
+    nacos:
+      config:
+        import-check:
+          enabled: false
+      discovery:
+        enabled: ${NACOS_DISCOVERY_ENABLED:false}
+        server-addr: ${NACOS_ADDR:127.0.0.1:8848}
+        namespace: ${NACOS_NAMESPACE:public}
+        group: ${NACOS_GROUP:DEFAULT_GROUP}
+        username: ${NACOS_USERNAME:nacos}
+        password: ${NACOS_PASSWORD:nacos}
+        register-enabled: true
+        watch:
+          enabled: true
+    discovery:
+      client:
+        health-indicator:
+          enabled: false
+          include-description: false
+        composite-indicator:
+          enabled: false
+    gateway:
+      routes:
+        - id: auth-service
+          uri: ${GATEWAY_AUTH_URI:http://localhost:8093}
+          predicates:
+            - Path=/auth/**
+          filters:
+            - StripPrefix=1
+        - id: aigc-service
+          uri: ${GATEWAY_AIGC_URI:http://localhost:8094}
+          predicates:
+            - Path=/aigc/**
+          filters:
+            - StripPrefix=1
+        - id: message-service
+          uri: ${GATEWAY_MESSAGE_URI:http://localhost:8095}
+          predicates:
+            - Path=/message/**
+          filters:
+            - StripPrefix=1
+        - id: forum-service
+          uri: ${GATEWAY_FORUM_URI:http://localhost:8081}
+          predicates:
+            - Path=/**
+          filters:
+            - name: RequestRateLimiter
+              args:
+                key-resolver: "#{@ipKeyResolver}"
+                redis-rate-limiter.replenishRate: ${GATEWAY_RATE_REPLENISH:200}
+                redis-rate-limiter.burstCapacity: ${GATEWAY_RATE_BURST:400}
+                redis-rate-limiter.requestedTokens: 1
+    sentinel:
+      enabled: ${SENTINEL_ENABLED:true}
+      eager: true
+      transport:
+        dashboard: ${SENTINEL_DASHBOARD:127.0.0.1:8858}
+      filter:
+        enabled: true
+
+management:
+  endpoint:
+    health:
+      show-details: always
+  endpoints:
+    web:
+      exposure:
+        include: health,info,metrics,prometheus
+  health:
+    elasticsearch:
+      enabled: false
+    nacos-config:
+      enabled: false
+    nacos-discovery:
+      enabled: false
+    discovery:
+      enabled: false
+
+paicoding:
+  dynamic-config:
+    enabled: false
+  service:
+    auto-config:
+      enabled: false
+
+gateway:
+  trace:
+    header-name: X-Trace-Id
+  rate-limit:
+    trusted-proxy: ${GATEWAY_TRUST_PROXY:false}

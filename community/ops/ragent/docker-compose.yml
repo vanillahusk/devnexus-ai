@@ -1,0 +1,118 @@
+version: "3.8"
+
+services:
+  redis:
+    image: redis:7.4.1-alpine
+    container_name: paicoding-ragent-redis
+    profiles: ["managed-redis"]
+    command: ["redis-server", "--save", "", "--appendonly", "no", "--requirepass", "123456"]
+    ports:
+      - "${RAGENT_MANAGED_REDIS_PORT:-16379}:6379"
+    tmpfs:
+      - /data:size=67108864
+    mem_limit: 128m
+    cpus: 0.25
+    healthcheck:
+      test: ["CMD", "redis-cli", "-a", "123456", "ping"]
+      interval: 5s
+      timeout: 3s
+      retries: 24
+    restart: "no"
+
+  postgres:
+    image: pgvector/pgvector:0.8.2-pg16
+    container_name: paicoding-ragent-postgres
+    profiles: ["ragent"]
+    environment:
+      POSTGRES_DB: ragent
+      POSTGRES_USER: postgres
+      POSTGRES_PASSWORD: postgres
+    ports:
+      - "5432:5432"
+    volumes:
+      - ${RAGENT_PROJECT_DIR:-../../../ragent}/resources/database/schema_pg.sql:/docker-entrypoint-initdb.d/01-schema.sql:ro
+      - ${RAGENT_PROJECT_DIR:-../../../ragent}/resources/database/init_data_pg.sql:/docker-entrypoint-initdb.d/02-data.sql:ro
+    tmpfs:
+      - /var/lib/postgresql/data:size=536870912
+    shm_size: 128m
+    mem_limit: 384m
+    cpus: 1.0
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U postgres -d ragent"]
+      interval: 5s
+      timeout: 3s
+      retries: 24
+    restart: "no"
+
+  object-storage:
+    image: quay.io/minio/minio:RELEASE.2025-09-07T16-13-09Z
+    container_name: paicoding-ragent-object-storage
+    profiles: ["ragent"]
+    command: server /data --console-address ":9001"
+    environment:
+      MINIO_ROOT_USER: rustfsadmin
+      MINIO_ROOT_PASSWORD: rustfsadmin
+    ports:
+      - "9000:9000"
+    tmpfs:
+      - /data:size=268435456
+    mem_limit: 256m
+    cpus: 0.75
+    healthcheck:
+      test: ["CMD", "mc", "ready", "local"]
+      interval: 5s
+      timeout: 3s
+      retries: 24
+    restart: "no"
+
+  nameserver:
+    image: apache/rocketmq:5.3.2
+    container_name: paicoding-ragent-rocketmq-nameserver
+    profiles: ["ragent"]
+    command: sh mqnamesrv
+    environment:
+      JAVA_OPT_EXT: "-Xms128m -Xmx192m -Xmn64m"
+    ports:
+      - "9876:9876"
+    tmpfs:
+      - /home/rocketmq/logs:size=67108864
+    mem_limit: 256m
+    cpus: 0.5
+    healthcheck:
+      test: ["CMD-SHELL", "grep -q 'The Name Server boot success' /home/rocketmq/logs/rocketmqlogs/namesrv.log"]
+      interval: 5s
+      timeout: 3s
+      retries: 24
+    restart: "no"
+
+  broker:
+    image: apache/rocketmq:5.3.2
+    container_name: paicoding-ragent-rocketmq-broker
+    profiles: ["ragent"]
+    user: root
+    command: sh mqbroker -n nameserver:9876
+    depends_on:
+      nameserver:
+        condition: service_healthy
+    environment:
+      NAMESRV_ADDR: nameserver:9876
+      JAVA_OPT_EXT: "-Xms192m -Xmx320m -Xmn96m"
+    ports:
+      - "10909:10909"
+      - "10911:10911"
+      - "10912:10912"
+    tmpfs:
+      - /home/rocketmq/store:size=268435456
+      - /home/rocketmq/logs:size=134217728
+    mem_limit: 448m
+    cpus: 1.0
+    healthcheck:
+      test: ["CMD-SHELL", "sh mqadmin clusterList -n nameserver:9876 >/dev/null 2>&1"]
+      interval: 5s
+      timeout: 5s
+      retries: 30
+    restart: "no"
+
+networks:
+  default:
+    name: paicoding-ragent-low-resource

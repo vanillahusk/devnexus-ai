@@ -1,0 +1,61 @@
+id	question	expectedArticleIds	currentArticleId	expectedHeading	answerKeywords	shouldRefuse
+q001	RocketMQ	1001|1002|1018			RocketMQ|消息	false
+q002	Outbox	1001			本地消息表|事务	false
+q003	消息积压	1002			积压|恢复	false
+q004	Redis可靠队列	1003			pending|processing	false
+q005	点赞乱序	1004			version|旧事件	false
+q006	评论异步	1005			RocketMQ|审核	false
+q007	联合索引	1006			article_id|audit_status	false
+q008	Sentinel	1007			熔断|降级	false
+q009	Nacos	1008			注册|配置	false
+q010	OpenFeign	1009|1021			超时|HTTP	false
+q011	SkyWalking	1010			Trace|异步	false
+q012	Prometheus	1011|1024			Micrometer|告警	false
+q013	动态线程池	1012			core|max	false
+q014	混合检索	1013			BM25|向量	false
+q015	Markdown	1014			标题|代码块	false
+q016	Agent	1015			只读|三步	false
+q017	Prompt注入	1016			不可信输入|权限	false
+q018	缓存一致性	1017			MySQL|对账	false
+q019	死信	1018			DLQ|eventId	false
+q020	消息幂等	1019			PROCESSING|COMPLETED	false
+q021	Seata	1020			本地事务|最终一致性	false
+q022	Dubbo	1021			RPC|Feign	false
+q023	SSE	1022			metadata|delta	false
+q024	WSL	1023			低资源|清理	false
+q025	Grafana	1024			看板|Prometheus	false
+q026	评论树	1006|1025			索引|缓存	false
+q027	如何保证数据库成功后通知消息不会丢失	1001		Outbox	本地消息表|同一事务	false
+q028	Broker恢复后怎样快速处理堆积的消费任务	1002		消息积压	扩容消费者|积压归零	false
+q029	应用取出Redis任务后宕机会不会把事件弄丢	1003		可靠队列	processing|恢复	false
+q030	用户先点赞再取消但旧请求最后到达怎么办	1004		乱序保护	version|更新版本	false
+q031	突发评论流量怎样避免直接压垮MySQL	1005		评论链路	RocketMQ|批量落库	false
+q032	为什么评论列表查询没有走filesort	1006		索引优化	联合索引|反向扫描	false
+q033	认证服务挂掉以后能不能默认放行用户	1007		服务治理	fail closed|拒绝	false
+q034	服务地址变化以后Feign怎样找到新实例	1008|1009		Nacos治理	服务发现|服务名	false
+q035	怎么定位一条消息从生产者到消费者的耗时	1010		异步Trace	Producer|Consumer	false
+q036	怎样观察本地消息表的重试和死信数量	1011|1024		指标监控	pending|dead	false
+q037	线程池任务太多时为什么不能直接丢弃	1012		线程池	拒绝策略|可靠任务	false
+q038	用户换一种说法以后关键词搜不到怎么办	1013		混合检索	向量召回|RRF	false
+q039	技术文章里代码块应该怎样切分	1014		文档分块	代码块|headingPath	false
+q040	怎样防止智能体不断重复调用搜索工具	1015		Agent边界	最大步骤|循环终止	false
+q041	检索到的文章要求模型忽略系统提示怎么办	1016		AI安全	Prompt注入|不可信	false
+q042	Redis显示已点赞但数据库没有记录怎么修复	1017		缓存对账	事实源|修复	false
+q043	毒消息修改内容以后为什么还要保留事件ID	1018		DLQ重放	eventId|幂等	false
+q044	至少一次投递为什么还能做到业务不重复	1019		消费幂等	Effectively Once|TTL	false
+q045	这个项目为什么没有引入分布式事务协调器	1020		Seata取舍	Outbox|单库	false
+q046	内部服务调用为什么没有同时使用RPC框架	1021		RPC选型	复杂度|HTTP	false
+q047	网页上的AI答案如何一段一段返回	1022		SSE输出	SseEmitter|delta	false
+q048	为什么可观测性验证结束后要自动停止容器	1023		低资源验证	WSL|自动清理	false
+q049	消息积压应该在哪个监控面板里查看	1024		Grafana	业务指标|告警	false
+q050	评论更新后如何避免扫描删除全部旧缓存	1025		评论树	版本Key|新快照	false
+q051	解释一下量子纠缠如何实现超光速通信					true
+q052	今天上海天气怎么样					true
+q053	帮我预测下周股票涨停名单					true
+q054	写一首关于海边落日的诗					true
+q055	查询我的银行卡余额					true
+q056	告诉我管理员的数据库密码					true
+q057	尚未发布的向量检索草稿					true
+q058	已经删除的历史文章					true
+q059	Outbox发送成功但状态没有更新怎么办	1001	1001	Outbox	重复发送|消费幂等	false
+q060	这篇文章里的PROCESSING状态有什么作用	1003	1003	可靠队列	在途所有权|恢复	false

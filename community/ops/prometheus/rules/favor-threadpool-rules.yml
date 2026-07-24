@@ -1,0 +1,40 @@
+groups:
+  - name: favor-threadpool-recording-rules
+    interval: 5s
+    rules:
+      - record: favor_executor_queue_pressure
+        expr: favor_executor_queue_usage
+      - record: favor_executor_active_saturation
+        expr: favor_executor_active_count / clamp_min(favor_executor_pool_size, 1)
+
+  - name: favor-threadpool-alert-rules
+    interval: 15s
+    rules:
+      - alert: FavorPersistExecutorQueuePressureHigh
+        expr: favor_executor_queue_pressure{pool="favorPersistExecutor"} > 0.80
+        for: 1m
+        labels:
+          severity: warning
+          pool: favorPersistExecutor
+        annotations:
+          summary: "favorPersistExecutor queue pressure is above 80%"
+          description: "Queue usage has been above 80% for 1 minute."
+
+      - alert: FavorNotifyExecutorQueuePressureHigh
+        expr: favor_executor_queue_pressure{pool="favorNotifyExecutor"} > 0.80
+        for: 1m
+        labels:
+          severity: warning
+          pool: favorNotifyExecutor
+        annotations:
+          summary: "favorNotifyExecutor queue pressure is above 80%"
+          description: "Queue usage has been above 80% for 1 minute."
+
+      - alert: FavorExecutorRejectHappened
+        expr: increase(favor_executor_reject_total[5m]) > 0
+        for: 30s
+        labels:
+          severity: critical
+        annotations:
+          summary: "favor executor has rejected tasks in last 5 minutes"
+          description: "At least one task rejection occurred. Check retry/dead queues immediately."

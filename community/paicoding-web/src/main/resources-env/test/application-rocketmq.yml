@@ -1,0 +1,14 @@
+paicoding:
+  mq:
+    provider: rocketmq
+    rocketmq:
+      topic: paicoding-business-event
+      comment-consumer-group: paicoding-comment-write-test-group
+      notify-consumer-group: paicoding-notify-test-group
+
+rocketmq:
+  name-server: ${ROCKETMQ_NAME_SERVER:127.0.0.1:9876}
+  producer:
+    group: paicoding-producer-test-group
+    send-message-timeout: 3000
+    retry-times-when-send-failed: 2

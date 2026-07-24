@@ -1,0 +1,26 @@
+server:
+  port: 8094
+
+spring:
+  application:
+    name: aigc-service
+  profiles:
+    active: dev
+  config:
+    import: application-common.yml,application-dal.yml,application-web.yml,application-config.yml,application-image.yml,application-email.yml,application-ai.yml,application-rocketmq.yml,application-nacos.yml,application-sentinel.yml
+  main:
+    allow-bean-definition-overriding: true
+    allow-circular-references: true
+  liquibase:
+    enabled: false
+
+management:
+  endpoints:
+    web:
+      exposure:
+        include: health,info,metrics,prometheus
+
+paicoding:
+  service:
+    auto-config:
+      enabled: false

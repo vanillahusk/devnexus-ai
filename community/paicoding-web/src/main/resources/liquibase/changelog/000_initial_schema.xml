@@ -1,0 +1,174 @@
+<?xml version="1.0" encoding="utf-8"?>
+<databaseChangeLog
+        xmlns="http://www.liquibase.org/xml/ns/dbchangelog"
+        xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+        xsi:schemaLocation="http://www.liquibase.org/xml/ns/dbchangelog http://www.liquibase.org/xml/ns/dbchangelog/dbchangelog-3.5.xsd">
+
+    <property name="now" value="now()" dbms="mysql"/>
+    <property name="autoIncrement" value="true"/>
+
+    <changeSet id="00000000000001" author="YiHui">
+        <sqlFile dbms="mysql" endDelimiter=";" encoding="UTF-8" path="liquibase/data/init_schema_221209.sql"/>
+    </changeSet>
+
+    <changeSet id="00000000000002" author="YiHui">
+        <sqlFile dbms="mysql" endDelimiter=";" encoding="UTF-8" path="liquibase/data/init_data_221209.sql"/>
+    </changeSet>
+
+    <changeSet id="00000000000003" author="YiHui">
+        <sqlFile dbms="mysql" endDelimiter=";" encoding="UTF-8" path="liquibase/data/init_data_221210.sql"/>
+    </changeSet>
+
+    <changeSet id="00000000000005" author="YiHui">
+        <sqlFile dbms="mysql" endDelimiter=";" encoding="UTF-8" path="liquibase/data/init_data_221216.sql"/>
+    </changeSet>
+
+    <!--  专栏类型，新增免费开始时间、结束时间  -->
+    <changeSet id="00000000000006" author="YiHui">
+        <sqlFile dbms="mysql" endDelimiter=";" encoding="UTF-8" path="liquibase/data/update_schema_221223.sql"/>
+    </changeSet>
+
+    <!-- user_info表添加ip字段，用于记录访问用户所在地   -->
+    <changeSet id="00000000000007" author="YiHui">
+        <sqlFile dbms="mysql" endDelimiter=";" encoding="UTF-8" path="liquibase/data/update_schema_221229.sql"/>
+    </changeSet>
+
+    <!-- 配置表新增 extra 字段 -->
+    <changeSet id="00000000000008" author="YiHui">
+        <sqlFile dbms="mysql" endDelimiter=";" encoding="UTF-8" path="liquibase/data/update_schema_230103.sql"/>
+    </changeSet>
+
+    <!-- 技术派介绍文章 -->
+    <changeSet id="00000000000009" author="YiHui">
+        <sqlFile dbms="mysql" endDelimiter=";" encoding="UTF-8" path="liquibase/data/init_data_230103.sql"/>
+    </changeSet>
+
+    <!-- 重新更新标签 -->
+    <changeSet id="00000000000012" author="LouZai">
+        <sqlFile dbms="mysql" endDelimiter=";" encoding="UTF-8" path="liquibase/data/init_data_230105.sql"/>
+    </changeSet>
+
+    <!-- 添加审核中 -->
+    <changeSet id="00000000000013" author="LouZai">
+        <sqlFile dbms="mysql" endDelimiter=";" encoding="UTF-8" path="liquibase/data/init_data_230130.sql"/>
+    </changeSet>
+
+    <!-- 添加用户角色 -->
+    <changeSet id="00000000000014" author="YiHui">
+        <sqlFile dbms="mysql" endDelimiter=";" encoding="UTF-8" path="liquibase/data/update_schema_230131.sql"/>
+    </changeSet>
+
+    <!-- 重新调整初始化的相关文章内容 -->
+    <changeSet id="00000000000015" author="XuYifei">
+        <sqlFile dbms="mysql" endDelimiter=";" encoding="UTF-8" path="liquibase/data/init_data_230415.sql"/>
+    </changeSet>
+
+    <!-- AI 聊天相关 -->
+    <changeSet id="00000000000016" author="XuYifei">
+        <preConditions onFail="MARK_RAN">
+            <not><tableExists tableName="user_ai"/></not>
+        </preConditions>
+        <sqlFile dbms="mysql" endDelimiter=";" encoding="UTF-8" path="liquibase/data/update_schema_230626.sql"/>
+    </changeSet>
+
+    <!-- db 配置 -->
+    <changeSet id="00000000000017" author="XuYifei">
+        <preConditions onFail="MARK_RAN">
+            <not><tableExists tableName="global_conf"/></not>
+        </preConditions>
+        <sqlFile dbms="mysql" endDelimiter=";" encoding="UTF-8" path="liquibase/data/update_schema_230628.sql"/>
+    </changeSet>
+
+    <!-- 添加枚举字典 -->
+    <changeSet id="00000000000018" author="XuYifei">
+        <preConditions onFail="MARK_RAN">
+            <sqlCheck expectedResult="0">SELECT COUNT(*) FROM dict_common WHERE type_code = 'AiChatStat'</sqlCheck>
+        </preConditions>
+        <sqlFile dbms="mysql" endDelimiter=";" encoding="UTF-8" path="liquibase/data/init_data_230629.sql"/>
+    </changeSet>
+
+    <!-- 新增专栏文章的阅读类型  -->
+    <changeSet id="00000000000019" author="XuYifei">
+        <preConditions onFail="MARK_RAN">
+            <not><columnExists tableName="column_article" columnName="read_type"/></not>
+        </preConditions>
+        <sqlFile dbms="mysql" endDelimiter=";" encoding="UTF-8" path="liquibase/data/update_schema_230820.sql"/>
+    </changeSet>
+
+    <!-- 添加星球描述信息  -->
+    <changeSet id="00000000000020" author="XuYifei">
+        <sqlFile dbms="mysql" endDelimiter=";" encoding="UTF-8" path="liquibase/data/init_data_230821.sql"/>
+    </changeSet>
+
+    <!-- 修改文章主键  -->
+    <changeSet id="00000000000021" author="XuYifei">
+        <preConditions onFail="MARK_RAN">
+            <sqlCheck expectedResult="0">SELECT COUNT(*) FROM information_schema.COLUMNS WHERE TABLE_SCHEMA = DATABASE() AND TABLE_NAME = 'article' AND COLUMN_NAME = 'id' AND DATA_TYPE = 'bigint'</sqlCheck>
+        </preConditions>
+        <sqlFile dbms="mysql" endDelimiter=";" encoding="UTF-8" path="liquibase/data/update_schema_231018.sql"/>
+    </changeSet>
+
+    <!-- 添加枚举字典  -->
+    <changeSet id="00000000000022" author="XuYifei">
+        <preConditions onFail="MARK_RAN">
+            <sqlCheck expectedResult="0">SELECT COUNT(*) FROM dict_common WHERE type_code = 'ColumnType' AND dict_code = '3'</sqlCheck>
+        </preConditions>
+        <sqlFile dbms="mysql" endDelimiter=";" encoding="UTF-8" path="liquibase/data/init_data_231113.sql"/>
+    </changeSet>
+
+    <changeSet id="00000000000023" author="Codex">
+        <preConditions onFail="MARK_RAN">
+            <not><tableExists tableName="mq_outbox_event"/></not>
+        </preConditions>
+        <sqlFile dbms="mysql" endDelimiter=";" encoding="UTF-8" path="liquibase/data/update_schema_260712_mq_outbox.sql"/>
+    </changeSet>
+
+    <changeSet id="00000000000024" author="Codex">
+        <preConditions onFail="MARK_RAN">
+            <not><columnExists tableName="user_foot" columnName="favor_version"/></not>
+        </preConditions>
+        <sqlFile dbms="mysql" endDelimiter=";" encoding="UTF-8" path="liquibase/data/update_schema_260712_favor_version.sql"/>
+    </changeSet>
+
+    <changeSet id="00000000000025" author="Codex">
+        <preConditions onFail="MARK_RAN">
+            <not><columnExists tableName="comment" columnName="audit_status"/></not>
+        </preConditions>
+        <sqlFile dbms="mysql" endDelimiter=";" encoding="UTF-8" path="liquibase/data/update_schema_260713_comment_audit.sql"/>
+    </changeSet>
+
+    <changeSet id="00000000000026" author="Codex">
+        <preConditions onFail="MARK_RAN">
+            <not><columnExists tableName="article" columnName="knowledge_version"/></not>
+        </preConditions>
+        <sqlFile dbms="mysql" endDelimiter=";" encoding="UTF-8" path="liquibase/data/update_schema_260715_article_knowledge_version.sql"/>
+    </changeSet>
+
+    <changeSet id="00000000000027" author="Codex">
+        <preConditions onFail="MARK_RAN">
+            <not><tableExists tableName="article_knowledge_index_state"/></not>
+        </preConditions>
+        <sqlFile dbms="mysql" endDelimiter=";" encoding="UTF-8" path="liquibase/data/update_schema_260715_article_knowledge_state.sql"/>
+    </changeSet>
+
+    <changeSet id="00000000000028" author="Codex">
+        <preConditions onFail="MARK_RAN">
+            <not><columnExists tableName="comment" columnName="source_event_id"/></not>
+        </preConditions>
+        <sqlFile dbms="mysql" endDelimiter=";" encoding="UTF-8" path="liquibase/data/update_schema_260715_comment_event_id.sql"/>
+    </changeSet>
+
+    <changeSet id="00000000000029" author="Codex">
+        <preConditions onFail="MARK_RAN">
+            <not><tableExists tableName="notify_projection_state"/></not>
+        </preConditions>
+        <sqlFile dbms="mysql" endDelimiter=";" encoding="UTF-8" path="liquibase/data/update_schema_260715_notify_projection_state.sql"/>
+    </changeSet>
+
+    <changeSet id="00000000000030" author="Codex">
+        <preConditions onFail="MARK_RAN">
+            <not><tableExists tableName="mq_dlq_replay_audit"/></not>
+        </preConditions>
+        <sqlFile dbms="mysql" endDelimiter=";" encoding="UTF-8" path="liquibase/data/update_schema_260715_dlq_replay_audit.sql"/>
+    </changeSet>
+</databaseChangeLog>

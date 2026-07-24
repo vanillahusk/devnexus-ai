@@ -1,0 +1,31 @@
+service:
+  discovery:
+    enabled: true
+    services:
+      forum-service:
+        instances:
+          - http://localhost:8081
+      auth-service:
+        instances:
+          - http://localhost:8093
+      aigc-service:
+        instances:
+          - http://localhost:8094
+      message-service:
+        instances:
+          - http://localhost:8095
+
+spring:
+  cloud:
+    discovery:
+      client:
+        simple:
+          instances:
+            forum-service:
+              - uri: http://localhost:8081
+            auth-service:
+              - uri: http://localhost:8093
+            aigc-service:
+              - uri: http://localhost:8094
+            message-service:
+              - uri: http://localhost:8095

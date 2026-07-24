@@ -1,0 +1,139 @@
+version: '3.8'
+
+services:
+  nacos:
+    image: nacos/nacos-server:v2.4.3
+    container_name: paicoding-nacos
+    environment:
+      MODE: standalone
+      NACOS_AUTH_ENABLE: "false"
+      JVM_XMS: 256m
+      JVM_XMX: 256m
+      JVM_XMN: 128m
+    ports:
+      - "8848:8848"
+      - "9848:9848"
+      - "9849:9849"
+    healthcheck:
+      test: ["CMD", "curl", "-fsS", "http://localhost:8848/nacos/v1/console/health/readiness"]
+      interval: 10s
+      timeout: 5s
+      retries: 12
+
+  mysql:
+    image: mysql:8.0.39
+    container_name: paicoding-mysql
+    profiles: ["full"]
+    environment:
+      MYSQL_ROOT_PASSWORD: ${MYSQL_ROOT_PASSWORD:-123456}
+      MYSQL_DATABASE: pai_coding
+      TZ: Asia/Shanghai
+    command: ["--character-set-server=utf8mb4", "--collation-server=utf8mb4_unicode_ci"]
+    ports:
+      - "3306:3306"
+    volumes:
+      - mysql-data:/var/lib/mysql
+    healthcheck:
+      test: ["CMD", "mysqladmin", "ping", "-h", "localhost", "-p${MYSQL_ROOT_PASSWORD:-123456}"]
+      interval: 10s
+      timeout: 5s
+      retries: 12
+
+  redis:
+    image: redis:7.4.1-alpine
+    container_name: paicoding-redis
+    profiles: ["full"]
+    command: ["redis-server", "--appendonly", "yes"]
+    ports:
+      - "6379:6379"
+    volumes:
+      - redis-data:/data
+    healthcheck:
+      test: ["CMD", "redis-cli", "ping"]
+      interval: 10s
+      timeout: 5s
+      retries: 12
+
+  prometheus:
+    image: prom/prometheus:v2.54.1
+    container_name: paicoding-prometheus
+    command:
+      - "--config.file=/etc/prometheus/prometheus.yml"
+      - "--storage.tsdb.path=/prometheus"
+      - "--storage.tsdb.retention.time=2h"
+      - "--storage.tsdb.retention.size=256MB"
+    volumes:
+      - ./prometheus/prometheus.yml:/etc/prometheus/prometheus.yml:ro
+      - ./prometheus/rules:/etc/prometheus/rules:ro
+    ports:
+      - "9090:9090"
+    extra_hosts:
+      - "host.docker.internal:host-gateway"
+    tmpfs:
+      - /prometheus:size=268435456,uid=65534,gid=65534,mode=0770
+
+  grafana:
+    image: grafana/grafana:11.2.0
+    container_name: paicoding-grafana
+    depends_on:
+      - prometheus
+    environment:
+      - GF_SECURITY_ADMIN_USER=admin
+      - GF_SECURITY_ADMIN_PASSWORD=admin
+    volumes:
+      - ./grafana/provisioning:/etc/grafana/provisioning:ro
+      - ./grafana/dashboards:/var/lib/grafana/dashboards:ro
+    tmpfs:
+      - /var/lib/grafana:size=67108864,uid=472,gid=0,mode=0770
+    ports:
+      - "3000:3000"
+
+  skywalking-banyandb:
+    image: apache/skywalking-banyandb:0.10.2
+    container_name: paicoding-skywalking-banyandb
+    profiles: ["observability"]
+    command: ["standalone"]
+    ports:
+      - "17912:17912"
+      - "17913:17913"
+    # Evidence data is disposable. Keeping it in memory avoids continuous
+    # writes to the WSL ext4.vhdx and guarantees cleanup after container stop.
+    tmpfs:
+      - /data:size=536870912
+
+  skywalking-oap:
+    image: apache/skywalking-oap-server:10.4.0
+    container_name: paicoding-skywalking-oap
+    profiles: ["observability"]
+    depends_on:
+      - skywalking-banyandb
+    environment:
+      SW_STORAGE: banyandb
+      SW_STORAGE_BANYANDB_TARGETS: skywalking-banyandb:17912
+      SW_STORAGE_BANYANDB_COMPATIBLE_SERVER_API_VERSIONS: "0.10"
+      SW_HEALTH_CHECKER: default
+      JAVA_OPTS: "-Xms192m -Xmx384m"
+    ports:
+      - "11800:11800"
+      - "12800:12800"
+    healthcheck:
+      test: ["CMD-SHELL", "curl -fsS http://localhost:12800/healthcheck >/dev/null || exit 1"]
+      interval: 10s
+      timeout: 5s
+      retries: 18
+
+  skywalking-ui:
+    image: apache/skywalking-ui:10.4.0
+    container_name: paicoding-skywalking-ui
+    profiles: ["observability"]
+    depends_on:
+      - skywalking-oap
+    environment:
+      SW_OAP_ADDRESS: http://skywalking-oap:12800
+      JAVA_OPTS: "-Xms128m -Xmx256m"
+    ports:
+      - "18083:8080"
+
+volumes:
+  mysql-data:
+  redis-data:

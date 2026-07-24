@@ -1,0 +1,7 @@
+auth:
+  service:
+    mode: local
+    baseUrl: http://localhost:8093
+    internalPath: /internal/auth
+    tokenHeader: X-AUTH-INTERNAL-TOKEN
+    token:

@@ -1,0 +1,83 @@
+groups:
+  - name: rag-agent-observability
+    rules:
+      - alert: RagKnowledgeOutboxDeadEventExists
+        expr: rag_index_outbox_events{status="dead"} > 0
+        for: 1m
+        labels:
+          severity: critical
+        annotations:
+          summary: "知识索引 Outbox 存在死信"
+          description: "文章知识事件已经进入 DEAD，需要核对事实源、修正事件并人工重放。"
+
+      - alert: RagKnowledgeOutboxBacklogHigh
+        expr: sum(rag_index_outbox_events{status=~"pending|retry"}) > 100
+        for: 5m
+        labels:
+          severity: warning
+        annotations:
+          summary: "知识索引事件持续积压"
+          description: "PENDING 与 RETRY 总量持续超过 100，检查 RocketMQ、AIGC 消费者和索引引擎。"
+
+      - alert: RagKnowledgeSyncP95High
+        expr: histogram_quantile(0.95, sum by (le) (rate(rag_index_sync_latency_seconds_bucket[10m]))) > 60
+        for: 10m
+        labels:
+          severity: warning
+        annotations:
+          summary: "知识索引同步 P95 过高"
+          description: "文章事件发生到索引成功应用的 P95 持续超过 60 秒。"
+
+      - alert: RagEmbeddingFailureRatioHigh
+        expr: |
+          sum(rate(rag_embedding_batches_total{status="failure"}[5m]))
+          /
+          clamp_min(sum(rate(rag_embedding_batches_total[5m])), 0.001) > 0.05
+        for: 5m
+        labels:
+          severity: warning
+        annotations:
+          summary: "Embedding 批次失败率过高"
+          description: "最近 5 分钟 Embedding 批次失败率超过 5%。"
+
+      - alert: RagModelFailureRatioHigh
+        expr: |
+          sum by (capability) (rate(rag_model_calls_duration_seconds_count{status="failure"}[5m]))
+          /
+          clamp_min(sum by (capability) (rate(rag_model_calls_duration_seconds_count[5m])), 0.001) > 0.05
+        for: 5m
+        labels:
+          severity: warning
+        annotations:
+          summary: "模型调用失败率过高"
+          description: "capability={{ $labels.capability }} 最近 5 分钟失败率超过 5%。"
+
+      - alert: RagRetrievalDegraded
+        expr: sum by (stage) (increase(rag_retrieval_degraded_total[5m])) > 0
+        for: 1m
+        labels:
+          severity: warning
+        annotations:
+          summary: "RAG 检索通道发生降级"
+          description: "stage={{ $labels.stage }} 最近 5 分钟出现降级，请检查向量、关键词或重排依赖。"
+
+      - alert: RagRefusalRatioHigh
+        expr: |
+          sum(rate(rag_retrieval_requests_total{outcome="refused"}[10m]))
+          /
+          clamp_min(sum(rate(rag_retrieval_requests_total[10m])), 0.001) > 0.50
+        for: 10m
+        labels:
+          severity: info
+        annotations:
+          summary: "RAG 拒答率持续偏高"
+          description: "最近 10 分钟拒答率超过 50%，需要结合固定评测集判断召回或内容覆盖问题。"
+
+      - alert: RagAgentControlledTerminationHigh
+        expr: sum by (reason) (increase(rag_agent_terminations_total[10m])) > 5
+        for: 5m
+        labels:
+          severity: warning
+        annotations:
+          summary: "Agent 受控终止持续触发"
+          description: "reason={{ $labels.reason }} 在 10 分钟内超过 5 次，检查循环、预算或执行器饱和。"

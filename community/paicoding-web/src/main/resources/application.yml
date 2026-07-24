@@ -1,0 +1,117 @@
+
+server:
+  port: 8081
+  servlet:
+    session:
+      timeout: 5m # 设置session的有效期为五分钟
+  compression:
+    enabled: true # 开启返回结果压缩，减少传输耗时
+    min-response-size: 2KB
+
+spring:
+  application:
+    name: forum-service
+  profiles:
+    active: dev
+  #  profiles:
+  #    active: dal,web,config,image
+  # 替换上面作废的spring.profiels.actice配置参数
+  config:
+    import: application-common.yml,application-dal.yml,application-web.yml,application-config.yml,application-image.yml,application-email.yml,application-rocketmq.yml,application-ai.yml,application-message.yml,application-auth.yml,application-discovery.yml,application-nacos.yml,application-sentinel.yml
+
+  main:
+    # 引入下面这个配置，主要是为了解决自定义实现的多数据源功能，自主注册的datasource替换默认的
+    allow-bean-definition-overriding: true
+    allow-circular-references: true
+  mvc:
+    async:
+      request-timeout:
+  liquibase:
+    change-log: classpath:liquibase/master.xml
+    enabled: true # 当实际使用的数据库不支持liquibase，如 mariadb 时，将这个参数设置为false
+    # 不在应用启动时清空校验和；变更已执行的 changeSet 会破坏迁移历史并可能重复初始化数据。
+    clear-checksums: false
+  servlet:
+    multipart:
+      enabled: true
+      max-file-size: 5MB
+      max-request-size: 10MB
+
+servlet:
+  tomcat:
+    max-swallow-size: -1 # 解决上传图片超过2MB之后，出现连接重置的问题
+
+# mybatis 相关统一配置
+mybatis-plus:
+  configuration:
+    #开启下划线转驼峰
+    map-underscore-to-camel-case: true
+  type-aliases-package: classpath:mapper/*.xml
+
+# springdoc-openapi 配置
+springdoc:
+  swagger-ui:
+    path: /swagger-ui.html
+    tags-sorter: alpha
+    operations-sorter: alpha
+  api-docs:
+    path: /v3/api-docs
+  group-configs:
+    - group: 'default'
+      paths-to-match: '/**'
+      packages-to-scan: com.github.paicoding.forum.web
+
+# knife4j
+knife4j:
+  basic:
+    # basic是否开启，默认为false
+    enable: true
+    username: root
+    password: 123456
+  setting:
+    language: zh-CN
+  openapi:
+    title: 技术派
+    description: 一个基于 Spring Boot3、MyBatis-Plus、MySQL、Redis、ElasticSearch、RocketMQ、Vue.js 等技术栈实现的社区系统，采用主流的互联网技术架构、全新的UI设计、支持一键源码部署，拥有完整的文章&教程发布/搜索/评论/统计流程等，代码完全开源，没有任何二次封装，是一个非常适合二次开发/实战的现代化社区项目👍 。
+    version: 1.0.0
+    concat:
+      - HX
+    license: Apache License 2.0
+    email: 1499624008@qq.com
+    group:
+      admin:
+        group-name: 后台接口分组
+        api-rule: package
+        api-rule-resources:
+          - com.github.paicoding.forum.web.admin
+      front:
+        group-name: 前台接口分组
+        api-rule: package
+        api-rule-resources:
+          - com.github.paicoding.forum.web.front
+
+logging:
+  level:
+    com.github.paicoding.forum.service.rank.service.impl.*: debug # 指定具体包下的日志输出级别
+
+management:
+  endpoints:
+    web:
+      exposure:
+        include: health,info,metrics,prometheus,dynamicThreadPools
+  endpoint:
+    health:
+      show-details: always
+  prometheus:
+    metrics:
+      export:
+        enabled: true
+
+dynamic:
+  tp:
+    enabled: true
+    redis-channel: dynamic-tp:refresh
+    # 在线配置的实例级安全护栏，防止误操作瞬间耗尽线程或内存。
+    max-core-size: 32
+    max-pool-size: 64
+    max-queue-capacity: 10000

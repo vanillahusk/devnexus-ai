@@ -1,0 +1,27 @@
+security:
+  salt: tech_π
+  salt-index: 3
+
+paicoding:
+  sensitive:
+    enable: true
+    deny:
+    allow:
+  jwt:
+    issuer: pai_coding
+    secret: hello_world
+    expire: 2592000000
+
+database:
+  name: pai_coding
+
+online:
+  statistics:
+    type: atomic_integer
+
+management:
+  health:
+    elasticsearch:
+      enabled: false
+    mail:
+      enabled: false

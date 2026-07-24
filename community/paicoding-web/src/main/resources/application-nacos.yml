@@ -1,0 +1,25 @@
+spring:
+  cloud:
+    compatibility-verifier:
+      enabled: false
+    nacos:
+      config:
+        # Local development does not require Config Center. The nacos-config
+        # profile supplies an explicit optional:nacos import when enabled.
+        import-check:
+          enabled: false
+      discovery:
+        enabled: ${NACOS_DISCOVERY_ENABLED:false}
+        server-addr: ${NACOS_ADDR:127.0.0.1:8848}
+        namespace: ${NACOS_NAMESPACE:public}
+        group: ${NACOS_GROUP:DEFAULT_GROUP}
+        username: ${NACOS_USERNAME:nacos}
+        password: ${NACOS_PASSWORD:nacos}
+        register-enabled: true
+        watch:
+          enabled: true
+
+service:
+  discovery:
+    enabled: true
+    prefer-registry: ${NACOS_DISCOVERY_ENABLED:false}

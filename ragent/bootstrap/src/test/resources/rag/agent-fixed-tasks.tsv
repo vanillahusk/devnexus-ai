@@ -1,0 +1,8 @@
+id	path	question	expected_mode	expected_tools	expected_failure_prefix
+A01	DIRECT	你好！	DIRECT	-	-
+A02	SEARCH	RocketMQ失败后如何恢复	AGENT	searchKnowledge	-
+A03	REWRITE	如何处理消息重试与死信	AGENT	searchKnowledge,searchKnowledge	-
+A04	DETAIL	展开检索到的文章详情	AGENT	searchKnowledge,getArticleDetail	-
+A05	DETAIL_BLOCKED	读取未发现文章9999	RAG_FALLBACK	-	AGENT_DETAIL_NOT_DISCOVERED
+A06	DUPLICATE	重复搜索Redis队列	RAG_FALLBACK	searchKnowledge	AGENT_DUPLICATE_TOOL_CALL
+A07	PLANNER_FAILURE	模拟Planner异常	RAG_FALLBACK	-	AGENT_EXECUTION_FAILED

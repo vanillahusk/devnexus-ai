@@ -1,0 +1,46 @@
+version: '3.8'
+
+services:
+  namesrv:
+    image: apache/rocketmq:5.3.2
+    container_name: paicoding-rocketmq-namesrv
+    command: sh mqnamesrv
+    environment:
+      JAVA_OPT_EXT: "-Xms256m -Xmx256m -Xmn128m"
+    ports:
+      - "9876:9876"
+    restart: unless-stopped
+
+  broker:
+    image: apache/rocketmq:5.3.2
+    container_name: paicoding-rocketmq-broker
+    # 本地命名卷默认归 root；开发环境以 root 启动以保证持久化目录可写。
+    user: root
+    command: sh mqbroker -n namesrv:9876
+    depends_on:
+      - namesrv
+    environment:
+      NAMESRV_ADDR: namesrv:9876
+      JAVA_OPT_EXT: "-Xms256m -Xmx384m -Xmn128m"
+    ports:
+      - "10909:10909"
+      - "10911:10911"
+      - "10912:10912"
+    volumes:
+      - broker-store:/home/rocketmq/store
+    restart: unless-stopped
+
+  dashboard:
+    image: apacherocketmq/rocketmq-dashboard:latest
+    container_name: paicoding-rocketmq-dashboard
+    depends_on:
+      - namesrv
+      - broker
+    environment:
+      JAVA_OPTS: "-Drocketmq.namesrv.addr=namesrv:9876 -Xms128m -Xmx256m"
+    ports:
+      - "8082:8080"
+    restart: unless-stopped
+
+volumes:
+  broker-store:

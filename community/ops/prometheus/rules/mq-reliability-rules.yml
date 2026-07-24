@@ -1,0 +1,86 @@
+groups:
+  - name: mq-reliability
+    rules:
+      - alert: AiExternalCircuitOpen
+        expr: max by (route) (ai_external_circuit_open) > 0
+        for: 1m
+        labels:
+          severity: warning
+        annotations:
+          summary: "AI 外部调用熔断器已打开"
+          description: "route={{ $labels.route }} 持续熔断超过 1 分钟，AI 将降级到本地知识模板。"
+
+      - alert: AiExternalCallP95High
+        expr: histogram_quantile(0.95, sum by (le, route) (rate(ai_external_call_duration_seconds_bucket[5m]))) > 2.5
+        for: 5m
+        labels:
+          severity: warning
+        annotations:
+          summary: "AI 外部调用 P95 过高"
+          description: "route={{ $labels.route }} 最近 5 分钟 P95 超过 2.5 秒。"
+
+      - alert: AiQuotaOrSafetyRejectHigh
+        expr: sum(rate(ai_requests_total{outcome="rejected"}[5m])) > 1
+        for: 5m
+        labels:
+          severity: info
+        annotations:
+          summary: "AI 配额或安全校验拒绝持续升高"
+          description: "AI 请求因调用配额、Token 配额、Prompt 注入或敏感内容被持续拒绝。"
+
+      - alert: OutboxDeadEventExists
+        expr: mq_outbox_events{status="dead"} > 0
+        for: 1m
+        labels:
+          severity: critical
+        annotations:
+          summary: "Outbox存在死信事件"
+          description: "至少一个Outbox事件达到最大重试次数，需要人工检查并重放。"
+
+      - alert: OutboxRetryBacklogHigh
+        expr: mq_outbox_events{status="retry"} > 100
+        for: 5m
+        labels:
+          severity: warning
+        annotations:
+          summary: "Outbox重试积压过高"
+          description: "Outbox重试事件持续超过100，检查RocketMQ Broker和网络。"
+
+      - alert: FavorPersistQueueBacklogHigh
+        expr: sum(favor_queue_size{queue=~"pending|processing|persist_retry|persist_retry_processing"}) > 1000
+        for: 5m
+        labels:
+          severity: warning
+        annotations:
+          summary: "点赞持久化队列持续积压"
+          description: "点赞待落库事件超过1000，检查线程池、Redis与MySQL。"
+
+      - alert: OutboxPublishFailureRatioHigh
+        expr: |
+          sum(rate(mq_outbox_dispatch_total{result=~"retry|dead"}[5m]))
+          /
+          clamp_min(sum(rate(mq_outbox_dispatch_total[5m])), 0.001) > 0.05
+        for: 5m
+        labels:
+          severity: warning
+        annotations:
+          summary: "Outbox发送失败率过高"
+          description: "最近5分钟Outbox发送失败比例超过5%。"
+
+      - alert: CommentRateLimiterDegraded
+        expr: increase(comment_write_rate_limit_total{result="degraded"}[5m]) > 0
+        for: 1m
+        labels:
+          severity: warning
+        annotations:
+          summary: "评论限流器发生降级"
+          description: "评论限流访问Redis失败并执行了降级放行，请检查Redis连通性。"
+
+      - alert: CommentRateLimiterBlockingHigh
+        expr: rate(comment_write_rate_limit_total{result="blocked"}[5m]) > 10
+        for: 2m
+        labels:
+          severity: warning
+        annotations:
+          summary: "热点评论树限流持续触发"
+          description: "评论限流持续超过每秒10次，检查热点文章流量或恶意请求。"

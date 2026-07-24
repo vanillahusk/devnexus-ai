@@ -1,0 +1,46 @@
+spring:
+  config:
+    import: "optional:nacos:${spring.application.name}.yaml?group=${NACOS_GROUP:DEFAULT_GROUP}&refreshEnabled=true"
+  cloud:
+    nacos:
+      config:
+        server-addr: ${NACOS_ADDR:127.0.0.1:8848}
+        namespace: ${NACOS_NAMESPACE:public}
+        group: ${NACOS_GROUP:DEFAULT_GROUP}
+        username: ${NACOS_USERNAME:nacos}
+        password: ${NACOS_PASSWORD:nacos}
+    gateway:
+      routes:
+        - id: auth-service
+          uri: lb://auth-service
+          predicates:
+            - Path=/auth/**
+          filters:
+            - StripPrefix=1
+        - id: aigc-service
+          uri: lb://aigc-service
+          predicates:
+            - Path=/aigc/**
+          filters:
+            - StripPrefix=1
+        - id: message-service
+          uri: lb://message-service
+          predicates:
+            - Path=/message/**
+          filters:
+            - StripPrefix=1
+        - id: forum-service
+          uri: lb://forum-service
+          predicates:
+            - Path=/**
+          filters:
+            - name: RequestRateLimiter
+              args:
+                key-resolver: "#{@ipKeyResolver}"
+                redis-rate-limiter.replenishRate: ${GATEWAY_RATE_REPLENISH:200}
+                redis-rate-limiter.burstCapacity: ${GATEWAY_RATE_BURST:400}
+                redis-rate-limiter.requestedTokens: 1
+
+gateway:
+  routes:
+    auth-internal-uri: ${GATEWAY_AUTH_INTERNAL_URI:lb://auth-service}

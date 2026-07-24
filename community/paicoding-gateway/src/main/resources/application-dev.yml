@@ -1,0 +1,20 @@
+gateway:
+  routes:
+    forum-service-id: forum-service
+    auth-service-id: auth-service
+    aigc-service-id: aigc-service
+    message-service-id: message-service
+    auth-internal-uri: ${GATEWAY_AUTH_INTERNAL_URI:http://localhost:8093}
+  auth:
+    enabled: true
+    internal-token-header: X-AUTH-INTERNAL-TOKEN
+    internal-token: ${GATEWAY_AUTH_INTERNAL_TOKEN:paicoding-auth-dev-token}
+    exclude-paths:
+      - /error
+      - /favicon.ico
+      - /actuator/**
+      - /auth/**
+      - /swagger-ui/**
+      - /v3/api-docs/**
+    session-cookie-name: f-session
+    propagate-user-headers: true

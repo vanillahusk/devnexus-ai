@@ -1,0 +1,130 @@
+apiVersion: 1
+
+groups:
+  - orgId: 1
+    name: favor-threadpool-alerts
+    folder: Favor ThreadPool
+    interval: 30s
+    rules:
+      - uid: favor-persist-queue-pressure
+        title: Favor Persist Queue Pressure High
+        condition: C
+        data:
+          - refId: A
+            relativeTimeRange:
+              from: 300
+              to: 0
+            datasourceUid: prometheus
+            model:
+              datasource:
+                type: prometheus
+                uid: prometheus
+              editorMode: code
+              expr: favor_executor_queue_pressure{pool="favorPersistExecutor"}
+              instant: true
+              intervalMs: 1000
+              maxDataPoints: 43200
+              refId: A
+          - refId: B
+            relativeTimeRange:
+              from: 300
+              to: 0
+            datasourceUid: __expr__
+            model:
+              expression: A
+              reducer: last
+              refId: B
+              type: reduce
+          - refId: C
+            relativeTimeRange:
+              from: 300
+              to: 0
+            datasourceUid: __expr__
+            model:
+              expression: B
+              refId: C
+              type: threshold
+              conditions:
+                - evaluator:
+                    params:
+                      - 0.8
+                    type: gt
+                  operator:
+                    type: and
+                  query:
+                    params:
+                      - C
+                  reducer:
+                    params: []
+                    type: last
+                  type: query
+        noDataState: NoData
+        execErrState: Error
+        for: 1m
+        annotations:
+          summary: favorPersistExecutor queue usage > 80%
+          description: Queue pressure remains high for 1 minute.
+        labels:
+          severity: warning
+          pool: favorPersistExecutor
+
+      - uid: favor-reject-happened
+        title: Favor Executor Reject Happened
+        condition: C
+        data:
+          - refId: A
+            relativeTimeRange:
+              from: 300
+              to: 0
+            datasourceUid: prometheus
+            model:
+              datasource:
+                type: prometheus
+                uid: prometheus
+              editorMode: code
+              expr: increase(favor_executor_reject_total[5m])
+              instant: true
+              intervalMs: 1000
+              maxDataPoints: 43200
+              refId: A
+          - refId: B
+            relativeTimeRange:
+              from: 300
+              to: 0
+            datasourceUid: __expr__
+            model:
+              expression: A
+              reducer: last
+              refId: B
+              type: reduce
+          - refId: C
+            relativeTimeRange:
+              from: 300
+              to: 0
+            datasourceUid: __expr__
+            model:
+              expression: B
+              refId: C
+              type: threshold
+              conditions:
+                - evaluator:
+                    params:
+                      - 0
+                    type: gt
+                  operator:
+                    type: and
+                  query:
+                    params:
+                      - C
+                  reducer:
+                    params: []
+                    type: last
+                  type: query
+        noDataState: NoData
+        execErrState: Error
+        for: 30s
+        annotations:
+          summary: favor executor rejected tasks in last 5 minutes
+          description: Check retry/dead queues and increase pool/queue capacity if needed.
+        labels:
+          severity: critical
