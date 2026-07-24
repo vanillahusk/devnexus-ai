@@ -34,7 +34,10 @@
     <rect x="378" y="254" width="132" height="44" rx="12" fill="white" stroke="#A5B4FC"/>
     <text x="409" y="282" fill="#3730A3">MySQL</text>
   </g>
-  <text x="82" y="338" fill="#64748B" font-family="Inter,Segoe UI,Arial,sans-serif" font-size="16">Vue · Spring Boot services · Dynamic TP</text>
+  <rect x="82" y="315" width="428" height="40" rx="12" fill="#0E7490"/>
+  <circle cx="108" cy="335" r="9" fill="#A5F3FC"/>
+  <path d="M104 335L107 338L113 331" stroke="#0E7490" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round"/>
+  <text x="304" y="341" text-anchor="middle" fill="white" font-family="Inter,Segoe UI,Arial,sans-serif" font-size="15" font-weight="600">Dynamic Thread Pool · Micrometer · Prometheus</text>
 
   <circle cx="705" cy="104" r="27" fill="#6D28D9"/>
   <path d="M692 112L705 91L718 112H692Z" stroke="white" stroke-width="4" stroke-linejoin="round"/>
