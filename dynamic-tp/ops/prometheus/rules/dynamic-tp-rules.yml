@@ -1,0 +1,10 @@
+groups:
+  - name: dynamic-tp-recording-rules
+    interval: 5s
+    rules:
+      - record: dynamic_tp_queue_pressure
+        expr: dynamic_tp_queue_usage
+      - record: dynamic_tp_active_saturation
+        expr: dynamic_tp_active_count / clamp_min(dynamic_tp_max_size, 1)
+      - record: dynamic_tp_refresh_failure_total
+        expr: dynamic_tp_refresh_rejected_total

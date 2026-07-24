@@ -11,7 +11,17 @@
 
 ## 构建
 
+首次构建时，先在仓库根目录安装动态线程池 Starter：
+
 ```bash
+cd dynamic-tp
+mvn clean install -DskipTests
+```
+
+然后构建社区工程：
+
+```bash
+cd ../community
 ./mvnw clean package -DskipTests
 ```
 

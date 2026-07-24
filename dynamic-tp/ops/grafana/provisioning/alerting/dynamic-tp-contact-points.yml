@@ -1,0 +1,12 @@
+apiVersion: 1
+
+contactPoints:
+  - orgId: 1
+    name: dynamic-tp-default
+    receivers:
+      - uid: dynamic-tp-email
+        type: email
+        settings:
+          addresses: admin@example.com
+          singleEmail: true
+        disableResolveMessage: false

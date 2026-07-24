@@ -16,7 +16,7 @@
 
 ## 关于项目
 
-DevNexus AI 是我的个人学习与求职作品集，包含技术社区、微服务、可靠消息、RAG 与 Agent 等方向的实践。
+DevNexus AI 是我的个人学习与求职作品集，包含技术社区、微服务、可靠消息、动态线程池、RAG 与 Agent 等方向的实践。
 
 如果你对项目复现、技术方案或简历项目表达感兴趣，可以通过 GitHub Issue 与我交流。如果这个项目对你有所帮助，欢迎点一个 ⭐ **Star**，这会鼓励我继续维护和完善它。
 
@@ -30,8 +30,9 @@ DevNexus AI 是我的个人学习与求职作品集，包含技术社区、微�
 | --- | --- | --- |
 | [`community/`](community/) | 社区后端、微服务与 Vue 前端 | [查看文档](community/README.md) |
 | [`ragent/`](ragent/) | RAG 服务与 React 管理端 | [查看文档](ragent/README.md) |
+| [`dynamic-tp/`](dynamic-tp/) | 动态线程池 Starter 与演示服务 | [查看文档](dynamic-tp/README.md) |
 
-两个工程可以独立构建，也可以组合运行。
+三个工程可以独立构建，也可以组合运行。
 
 ## 快速导航
 
@@ -41,6 +42,7 @@ DevNexus AI 是我的个人学习与求职作品集，包含技术社区、微�
 - [启动-rag-服务](#启动-rag-服务)
 - [停止服务](#停止服务)
 - [构建项目](#构建项目)
+- [AI 协作规则](#ai-协作规则)
 - [当前状态与参与贡献](#当前状态与参与贡献)
 
 ## 环境要求
@@ -62,11 +64,19 @@ cd devnexus-ai
 
 ## 启动社区服务
 
-### 1. 启动基础依赖
+### 1. 安装动态线程池 Starter
+
+首次构建时执行：
 
 ```bash
-cd community
+cd dynamic-tp
+mvn clean install -DskipTests
+cd ../community
+```
 
+### 2. 启动基础依赖
+
+```bash
 # MySQL、Redis、Nacos
 docker compose -f ops/docker-compose.yml --profile full up -d mysql redis nacos
 
@@ -78,7 +88,7 @@ docker compose -f ops/rocketmq/docker-compose.yml up -d
 `community/paicoding-web/src/main/resources-env/dev/application-dal.yml`
 中的数据库连接可用，并完成 Liquibase 初始化。
 
-### 2. 启动后端服务
+### 3. 启动后端服务
 
 在多个终端中进入 `community` 目录，分别执行：
 
@@ -105,7 +115,7 @@ bash scripts/run-gateway-dev.sh
 
 </details>
 
-### 3. 启动 Vue 前端
+### 4. 启动 Vue 前端
 
 ```bash
 cd community/pai-coding-front
@@ -171,14 +181,22 @@ docker compose -f ops/docker-compose.yml --profile full down
 ## 构建项目
 
 ```bash
+# 安装动态线程池 Starter
+cd dynamic-tp
+mvn clean install -DskipTests
+
 # 构建社区工程
-cd community
+cd ../community
 ./mvnw clean package -DskipTests
 
 # 构建 RAG 工程
 cd ../ragent
 ./mvnw clean package -DskipTests
 ```
+
+## AI 协作规则
+
+仓库根目录的 [`AGENTS.md`](AGENTS.md) 是 AI 协作入口，[`.agents/`](.agents/) 保存资源、测试、可靠消息、RAG 与交付规则。支持该约定的 AI 在修改项目前应先读取入口文件，并按任务类型加载对应规则。
 
 ## 配置安全
 

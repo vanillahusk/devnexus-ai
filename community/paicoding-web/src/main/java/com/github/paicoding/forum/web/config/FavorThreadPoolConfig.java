@@ -1,6 +1,6 @@
 package com.github.paicoding.forum.web.config;
 
-import com.interview.dynamictp.starter.core.ResizableCapacityLinkedBlockingQueue;
+import io.devnexus.dynamictp.starter.core.ResizableCapacityLinkedBlockingQueue;
 import io.micrometer.core.instrument.Gauge;
 import io.micrometer.core.instrument.MeterRegistry;
 import org.springframework.context.annotation.Bean;

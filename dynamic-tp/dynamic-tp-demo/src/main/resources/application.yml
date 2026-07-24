@@ -1,0 +1,41 @@
+server:
+  port: 8080
+
+spring:
+  application:
+    name: dynamic-tp-demo
+  redis:
+    host: 127.0.0.1
+    port: 6379
+
+dynamic:
+  tp:
+    enabled: true
+    redis-channel: dynamic-tp:refresh
+    monitor-interval-ms: 5000
+    alert-threshold: 0.85
+    critical-threshold: 0.95
+    alert-cooldown-ms: 30000
+    change-history-size: 30
+    endpoint-history-size: 10
+    reject-stale-version: true
+    allow-queue-capacity-shrink: false
+    monitor-log-enabled: true
+    metrics-enabled: true
+    config-cache-enabled: true
+    sync-config-on-startup: true
+    redis-config-key: dynamic-tp:configs
+    config-version-history-size: 100
+
+logging:
+  level:
+    io.devnexus.dynamictp: INFO
+
+management:
+  endpoints:
+    web:
+      exposure:
+        include: health,info,metrics,prometheus,dynamicThreadPools
+  endpoint:
+    health:
+      show-details: always

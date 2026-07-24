@@ -1,0 +1,258 @@
+{
+  "annotations": {
+    "list": [
+      {
+        "builtIn": 1,
+        "datasource": {
+          "type": "grafana",
+          "uid": "-- Grafana --"
+        },
+        "enable": true,
+        "hide": true,
+        "iconColor": "rgba(0, 211, 255, 1)",
+        "name": "Annotations & Alerts",
+        "type": "dashboard"
+      }
+    ]
+  },
+  "editable": true,
+  "fiscalYearStartMonth": 0,
+  "graphTooltip": 0,
+  "id": null,
+  "links": [],
+  "panels": [
+    {
+      "datasource": {
+        "type": "prometheus",
+        "uid": "prometheus"
+      },
+      "fieldConfig": {
+        "defaults": {
+          "color": {
+            "mode": "thresholds"
+          },
+          "mappings": [],
+          "thresholds": {
+            "mode": "absolute",
+            "steps": [
+              {
+                "color": "green",
+                "value": null
+              },
+              {
+                "color": "orange",
+                "value": 0.85
+              },
+              {
+                "color": "red",
+                "value": 0.95
+              }
+            ]
+          },
+          "unit": "percentunit"
+        },
+        "overrides": []
+      },
+      "gridPos": {
+        "h": 8,
+        "w": 8,
+        "x": 0,
+        "y": 0
+      },
+      "id": 1,
+      "options": {
+        "colorMode": "value",
+        "graphMode": "area",
+        "justifyMode": "auto",
+        "orientation": "auto",
+        "reduceOptions": {
+          "calcs": [
+            "lastNotNull"
+          ],
+          "fields": "",
+          "values": false
+        },
+        "textMode": "auto"
+      },
+      "pluginVersion": "11.1.0",
+      "targets": [
+        {
+          "expr": "dynamic_tp_queue_usage{pool=\"orderThreadPool\"}",
+          "legendFormat": "queue usage",
+          "refId": "A"
+        }
+      ],
+      "title": "Queue Usage",
+      "type": "stat"
+    },
+    {
+      "datasource": {
+        "type": "prometheus",
+        "uid": "prometheus"
+      },
+      "fieldConfig": {
+        "defaults": {
+          "color": {
+            "mode": "palette-classic"
+          },
+          "mappings": [],
+          "unit": "short"
+        },
+        "overrides": []
+      },
+      "gridPos": {
+        "h": 8,
+        "w": 8,
+        "x": 8,
+        "y": 0
+      },
+      "id": 2,
+      "options": {
+        "legend": {
+          "displayMode": "list",
+          "placement": "bottom"
+        },
+        "tooltip": {
+          "mode": "single"
+        }
+      },
+      "targets": [
+        {
+          "expr": "dynamic_tp_active_count{pool=\"orderThreadPool\"}",
+          "legendFormat": "active",
+          "refId": "A"
+        },
+        {
+          "expr": "dynamic_tp_queue_size{pool=\"orderThreadPool\"}",
+          "legendFormat": "queue size",
+          "refId": "B"
+        }
+      ],
+      "title": "Active Threads And Queue Size",
+      "type": "timeseries"
+    },
+    {
+      "datasource": {
+        "type": "prometheus",
+        "uid": "prometheus"
+      },
+      "fieldConfig": {
+        "defaults": {
+          "color": {
+            "mode": "palette-classic"
+          },
+          "mappings": [],
+          "unit": "short"
+        },
+        "overrides": []
+      },
+      "gridPos": {
+        "h": 8,
+        "w": 8,
+        "x": 16,
+        "y": 0
+      },
+      "id": 3,
+      "options": {
+        "legend": {
+          "displayMode": "list",
+          "placement": "bottom"
+        },
+        "tooltip": {
+          "mode": "single"
+        }
+      },
+      "targets": [
+        {
+          "expr": "dynamic_tp_refresh_applied_total{pool=\"orderThreadPool\"}",
+          "legendFormat": "applied",
+          "refId": "A"
+        },
+        {
+          "expr": "dynamic_tp_refresh_rejected_total{pool=\"orderThreadPool\"}",
+          "legendFormat": "rejected",
+          "refId": "B"
+        },
+        {
+          "expr": "dynamic_tp_alert_count_total{pool=\"orderThreadPool\"}",
+          "legendFormat": "alerts",
+          "refId": "C"
+        }
+      ],
+      "title": "Refresh And Alert Counters",
+      "type": "timeseries"
+    },
+    {
+      "datasource": {
+        "type": "prometheus",
+        "uid": "prometheus"
+      },
+      "fieldConfig": {
+        "defaults": {
+          "color": {
+            "mode": "palette-classic"
+          },
+          "mappings": [],
+          "unit": "short"
+        },
+        "overrides": []
+      },
+      "gridPos": {
+        "h": 9,
+        "w": 24,
+        "x": 0,
+        "y": 8
+      },
+      "id": 4,
+      "options": {
+        "legend": {
+          "displayMode": "table",
+          "placement": "bottom"
+        },
+        "tooltip": {
+          "mode": "multi"
+        }
+      },
+      "targets": [
+        {
+          "expr": "dynamic_tp_core_size{pool=\"orderThreadPool\"}",
+          "legendFormat": "core",
+          "refId": "A"
+        },
+        {
+          "expr": "dynamic_tp_max_size{pool=\"orderThreadPool\"}",
+          "legendFormat": "max",
+          "refId": "B"
+        },
+        {
+          "expr": "dynamic_tp_queue_capacity{pool=\"orderThreadPool\"}",
+          "legendFormat": "queue capacity",
+          "refId": "C"
+        }
+      ],
+      "title": "Thread Pool Capacity Trends",
+      "type": "timeseries"
+    }
+  ],
+  "refresh": "5s",
+  "schemaVersion": 39,
+  "style": "dark",
+  "tags": [
+    "dynamic-tp",
+    "thread-pool",
+    "dynamic-thread-pool"
+  ],
+  "templating": {
+    "list": []
+  },
+  "time": {
+    "from": "now-15m",
+    "to": "now"
+  },
+  "timepicker": {},
+  "timezone": "browser",
+  "title": "Dynamic Thread Pool Dashboard",
+  "uid": "dynamic-thread-pool-dashboard",
+  "version": 1,
+  "weekStart": ""
+}

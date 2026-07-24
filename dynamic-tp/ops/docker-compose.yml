@@ -1,0 +1,55 @@
+version: "3.9"
+
+services:
+  redis:
+    image: redis:7.4-alpine
+    container_name: dynamic-tp-redis
+    command: ["redis-server", "--appendonly", "yes"]
+    ports:
+      - "6379:6379"
+    volumes:
+      - redis-data:/data
+
+  dynamic-tp-demo:
+    build:
+      context: ..
+      dockerfile: dynamic-tp-demo/Dockerfile
+    container_name: dynamic-tp-demo
+    ports:
+      - "8080:8080"
+    environment:
+      SPRING_REDIS_HOST: redis
+      SPRING_REDIS_PORT: 6379
+    depends_on:
+      - redis
+
+  prometheus:
+    image: prom/prometheus:v2.54.1
+    container_name: dynamic-tp-prometheus
+    ports:
+      - "9090:9090"
+    volumes:
+      - ./prometheus/prometheus.yml:/etc/prometheus/prometheus.yml:ro
+      - ./prometheus/rules:/etc/prometheus/rules:ro
+    command:
+      - --config.file=/etc/prometheus/prometheus.yml
+    depends_on:
+      - dynamic-tp-demo
+
+  grafana:
+    image: grafana/grafana:11.1.0
+    container_name: dynamic-tp-grafana
+    ports:
+      - "3000:3000"
+    environment:
+      GF_SECURITY_ADMIN_USER: admin
+      GF_SECURITY_ADMIN_PASSWORD: admin
+      GF_PATHS_PROVISIONING: /etc/grafana/provisioning
+    volumes:
+      - ./grafana/provisioning:/etc/grafana/provisioning:ro
+      - ./grafana/dashboards:/var/lib/grafana/dashboards:ro
+    depends_on:
+      - prometheus
+
+volumes:
+  redis-data:

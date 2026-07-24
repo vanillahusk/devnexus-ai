@@ -1,0 +1,131 @@
+apiVersion: 1
+
+groups:
+  - orgId: 1
+    name: dynamic-tp-alerts
+    folder: Dynamic TP
+    interval: 30s
+    rules:
+      - uid: dynamic-tp-queue-pressure
+        title: Order Thread Pool Queue Pressure High
+        condition: C
+        data:
+          - refId: A
+            relativeTimeRange:
+              from: 300
+              to: 0
+            datasourceUid: prometheus
+            model:
+              datasource:
+                type: prometheus
+                uid: prometheus
+              editorMode: code
+              expr: dynamic_tp_queue_pressure{pool="orderThreadPool"}
+              instant: true
+              intervalMs: 1000
+              maxDataPoints: 43200
+              refId: A
+          - refId: B
+            relativeTimeRange:
+              from: 300
+              to: 0
+            datasourceUid: __expr__
+            model:
+              expression: A
+              reducer: last
+              refId: B
+              type: reduce
+          - refId: C
+            relativeTimeRange:
+              from: 300
+              to: 0
+            datasourceUid: __expr__
+            model:
+              expression: B
+              refId: C
+              type: threshold
+              conditions:
+                - evaluator:
+                    params:
+                      - 0.85
+                    type: gt
+                  operator:
+                    type: and
+                  query:
+                    params:
+                      - C
+                  reducer:
+                    params: []
+                    type: last
+                  type: query
+        noDataState: NoData
+        execErrState: Error
+        for: 1m
+        annotations:
+          summary: orderThreadPool queue pressure is above 85%
+          description: The queue usage has stayed above 85% for 1 minute.
+        labels:
+          severity: warning
+          pool: orderThreadPool
+
+      - uid: dynamic-tp-refresh-rejected
+        title: Order Thread Pool Refresh Rejected
+        condition: C
+        data:
+          - refId: A
+            relativeTimeRange:
+              from: 300
+              to: 0
+            datasourceUid: prometheus
+            model:
+              datasource:
+                type: prometheus
+                uid: prometheus
+              editorMode: code
+              expr: increase(dynamic_tp_refresh_failure_total{pool="orderThreadPool"}[5m])
+              instant: true
+              intervalMs: 1000
+              maxDataPoints: 43200
+              refId: A
+          - refId: B
+            relativeTimeRange:
+              from: 300
+              to: 0
+            datasourceUid: __expr__
+            model:
+              expression: A
+              reducer: last
+              refId: B
+              type: reduce
+          - refId: C
+            relativeTimeRange:
+              from: 300
+              to: 0
+            datasourceUid: __expr__
+            model:
+              expression: B
+              refId: C
+              type: threshold
+              conditions:
+                - evaluator:
+                    params:
+                      - 0
+                    type: gt
+                  operator:
+                    type: and
+                  query:
+                    params:
+                      - C
+                  reducer:
+                    params: []
+                    type: last
+                  type: query
+        noDataState: NoData
+        execErrState: Error
+        for: 30s
+        annotations:
+          summary: orderThreadPool has rejected refresh commands
+          description: There has been at least one rejected dynamic refresh within 5 minutes.
+        labels:
+          severity: critical
+          pool: orderThreadPool
