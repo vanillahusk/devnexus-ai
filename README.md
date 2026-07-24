@@ -1,19 +1,43 @@
+<div align="center">
+
 # DevNexus AI
 
-技术社区与 AI 知识平台。本仓库包含两个可以独立构建和运行的工程：
+技术社区与 AI 知识平台
 
-```text
-community/   社区后端、微服务和 Vue 前端
-ragent/      RAG 服务和 React 管理端
-```
+`Spring Boot 3` · `Spring Cloud Alibaba` · `RocketMQ` · `PostgreSQL` · `pgvector` · `Vue` · `React`
+
+</div>
+
+---
+
+## 项目组成
+
+| 目录 | 内容 | 使用说明 |
+| --- | --- | --- |
+| [`community/`](community/) | 社区后端、微服务与 Vue 前端 | [查看文档](community/README.md) |
+| [`ragent/`](ragent/) | RAG 服务与 React 管理端 | [查看文档](ragent/README.md) |
+
+两个工程可以独立构建，也可以组合运行。
+
+## 快速导航
+
+- [环境要求](#环境要求)
+- [获取代码](#获取代码)
+- [启动社区服务](#启动社区服务)
+- [启动-rag-服务](#启动-rag-服务)
+- [停止服务](#停止服务)
+- [构建项目](#构建项目)
+- [当前状态与参与贡献](#当前状态与参与贡献)
 
 ## 环境要求
 
-- JDK 17
-- Maven 3.9+
-- Node.js 20+
-- Docker 与 Docker Compose
-- `curl`、`nc`
+| 依赖 | 建议版本 |
+| --- | --- |
+| JDK | 17 |
+| Maven | 3.9+ |
+| Node.js | 20+ |
+| Docker / Docker Compose | 当前稳定版本 |
+| 命令行工具 | `curl`、`nc` |
 
 ## 获取代码
 
@@ -22,7 +46,9 @@ git clone git@github.com:VanillaCreamyy/devnexus-ai.git
 cd devnexus-ai
 ```
 
-## 启动社区依赖
+## 启动社区服务
+
+### 1. 启动基础依赖
 
 ```bash
 cd community
@@ -35,11 +61,12 @@ docker compose -f ops/rocketmq/docker-compose.yml up -d
 ```
 
 默认数据库为 `pai_coding`。首次运行前，请确认
-`paicoding-web/src/main/resources-env/dev/application-dal.yml` 中的数据库连接可用，并完成 Liquibase 初始化。
+`community/paicoding-web/src/main/resources-env/dev/application-dal.yml`
+中的数据库连接可用，并完成 Liquibase 初始化。
 
-## 启动社区服务
+### 2. 启动后端服务
 
-分别打开终端并在 `community` 目录执行：
+在多个终端中进入 `community` 目录，分别执行：
 
 ```bash
 bash scripts/run-auth-service-dev.sh
@@ -49,7 +76,8 @@ bash scripts/run-web-with-remote-services-dev.sh
 bash scripts/run-gateway-dev.sh
 ```
 
-默认端口：
+<details>
+<summary>查看默认端口</summary>
 
 | 服务 | 端口 |
 | --- | ---: |
@@ -61,7 +89,9 @@ bash scripts/run-gateway-dev.sh
 | Nacos | 8848 |
 | RocketMQ Dashboard | 8082 |
 
-启动社区 Vue 前端：
+</details>
+
+### 3. 启动 Vue 前端
 
 ```bash
 cd community/pai-coding-front
@@ -69,9 +99,11 @@ npm ci
 npm run dev
 ```
 
+更完整的社区启动参数参见 [`community/README.md`](community/README.md)。
+
 ## 启动 RAG 服务
 
-先启动低资源依赖并构建 Ragent：
+### 1. 启动依赖并构建
 
 ```bash
 cd community
@@ -79,14 +111,16 @@ bash scripts/start-ragent-low-resource-dependencies.sh
 bash scripts/build-ragent-integration-artifact.sh
 ```
 
-如需调用真实模型，在启动前通过环境变量提供密钥：
+### 2. 配置模型
+
+如需调用真实模型，请通过环境变量注入密钥，不要将密钥写入配置文件：
 
 ```bash
 export SILICONFLOW_API_KEY="your-key"
 export OPENROUTER_API_KEY="your-key"
 ```
 
-启动服务：
+### 3. 启动后端
 
 ```bash
 cd community
@@ -99,7 +133,7 @@ bash scripts/run-ragent-low-resource.sh
 curl http://127.0.0.1:9090/api/ragent/actuator/health
 ```
 
-启动 Ragent React 前端：
+### 4. 启动 React 管理端
 
 ```bash
 cd ragent/frontend
@@ -108,22 +142,26 @@ npm ci
 npm run dev
 ```
 
-## 停止依赖
+更多 RAG 配置参见 [`ragent/README.md`](ragent/README.md)。
+
+## 停止服务
 
 ```bash
 cd community
-bash scripts/stop-ragent-low-resource-dependencies.sh
 
+bash scripts/stop-ragent-low-resource-dependencies.sh
 docker compose -f ops/rocketmq/docker-compose.yml down
 docker compose -f ops/docker-compose.yml --profile full down
 ```
 
-## 构建
+## 构建项目
 
 ```bash
+# 构建社区工程
 cd community
 ./mvnw clean package -DskipTests
 
+# 构建 RAG 工程
 cd ../ragent
 ./mvnw clean package -DskipTests
 ```
@@ -131,8 +169,22 @@ cd ../ragent
 ## 配置安全
 
 - 不要提交 `.env`、API Key、Token、日志或运行时数据。
-- 模型密钥通过环境变量注入。
-- 本地密码和内部服务 Token 在公开部署前必须替换。
+- 模型密钥应通过环境变量注入。
+- 公开部署前请替换本地密码和内部服务 Token。
+
+## 当前状态与参与贡献
+
+本项目的社区后端、微服务、消息链路和 RAG 服务已经具备可运行实现，前端页面、交互体验及部分工程化配置仍在持续完善。
+
+如果你擅长 Vue、React、UI 设计或前后端联调，欢迎提交 Issue 或 Pull Request。功能建议、问题反馈和代码优化也同样欢迎。
+
+## 关于项目
+
+这是我的个人学习与求职作品集，主要用于实践技术社区、微服务、可靠消息、RAG 与 Agent 等技术。
+
+如果你对项目复现、技术方案或简历项目表达感兴趣，可以通过 GitHub Issue 与我交流。
+
+如果这个项目对你有所帮助，欢迎点一个 ⭐ **Star**，这会鼓励我继续维护和完善它。
 
 ## 许可
 
@@ -141,5 +193,5 @@ cd ../ragent
 - [Paicoding](https://github.com/itwanger/paicoding)
 - [Ragent](https://github.com/nageoffer/ragent)
 
-许可证分别保留在 `community/License` 和 `ragent/LICENSE`。
-
+许可证分别保留在 [`community/License`](community/License) 和
+[`ragent/LICENSE`](ragent/LICENSE)。
