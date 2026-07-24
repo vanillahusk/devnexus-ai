@@ -1,0 +1,60 @@
+<svg width="1200" height="360" viewBox="0 0 1200 360" fill="none" xmlns="http://www.w3.org/2000/svg">
+  <defs>
+    <linearGradient id="background" x1="80" y1="20" x2="1110" y2="350" gradientUnits="userSpaceOnUse">
+      <stop stop-color="#0B1020"/>
+      <stop offset="0.52" stop-color="#172554"/>
+      <stop offset="1" stop-color="#312E81"/>
+    </linearGradient>
+    <linearGradient id="accent" x1="742" y1="78" x2="1046" y2="290" gradientUnits="userSpaceOnUse">
+      <stop stop-color="#67E8F9"/>
+      <stop offset="1" stop-color="#A78BFA"/>
+    </linearGradient>
+    <filter id="glow" x="-50%" y="-50%" width="200%" height="200%">
+      <feGaussianBlur stdDeviation="12"/>
+    </filter>
+  </defs>
+
+  <rect width="1200" height="360" rx="28" fill="url(#background)"/>
+  <circle cx="1078" cy="46" r="170" fill="#4338CA" fill-opacity="0.2"/>
+  <circle cx="720" cy="348" r="220" fill="#0891B2" fill-opacity="0.12"/>
+  <path d="M0 296C230 220 350 350 590 286C820 224 964 252 1200 174V360H0V296Z" fill="#FFFFFF" fill-opacity="0.035"/>
+
+  <text x="82" y="129" fill="#F8FAFC" font-family="Inter,Segoe UI,Arial,sans-serif" font-size="54" font-weight="700" letter-spacing="1">
+    DevNexus AI
+  </text>
+  <text x="84" y="178" fill="#CBD5E1" font-family="Inter,Segoe UI,Arial,sans-serif" font-size="24">
+    Community · Microservices · Knowledge Retrieval · Agent
+  </text>
+  <rect x="82" y="216" width="134" height="38" rx="19" fill="#22D3EE" fill-opacity="0.14" stroke="#67E8F9" stroke-opacity="0.45"/>
+  <text x="108" y="241" fill="#A5F3FC" font-family="Inter,Segoe UI,Arial,sans-serif" font-size="16">COMMUNITY</text>
+  <rect x="230" y="216" width="164" height="38" rx="19" fill="#818CF8" fill-opacity="0.14" stroke="#A5B4FC" stroke-opacity="0.45"/>
+  <text x="255" y="241" fill="#C7D2FE" font-family="Inter,Segoe UI,Arial,sans-serif" font-size="16">MICROSERVICES</text>
+  <rect x="408" y="216" width="86" height="38" rx="19" fill="#A78BFA" fill-opacity="0.14" stroke="#C4B5FD" stroke-opacity="0.45"/>
+  <text x="434" y="241" fill="#DDD6FE" font-family="Inter,Segoe UI,Arial,sans-serif" font-size="16">RAG</text>
+
+  <g opacity="0.35" filter="url(#glow)">
+    <circle cx="911" cy="180" r="112" fill="#67E8F9"/>
+  </g>
+  <g stroke="url(#accent)" stroke-width="4">
+    <path d="M775 180H850"/>
+    <path d="M961 180H1036"/>
+    <path d="M905 126V82"/>
+    <path d="M905 234V278"/>
+    <path d="M867 142L821 106"/>
+    <path d="M943 218L989 254"/>
+    <path d="M943 142L989 106"/>
+    <path d="M867 218L821 254"/>
+  </g>
+  <g fill="#111827" stroke="url(#accent)" stroke-width="4">
+    <rect x="850" y="126" width="112" height="108" rx="28"/>
+    <circle cx="775" cy="180" r="25"/>
+    <circle cx="1036" cy="180" r="25"/>
+    <circle cx="905" cy="78" r="20"/>
+    <circle cx="905" cy="282" r="20"/>
+    <circle cx="817" cy="103" r="17"/>
+    <circle cx="993" cy="103" r="17"/>
+    <circle cx="817" cy="257" r="17"/>
+    <circle cx="993" cy="257" r="17"/>
+  </g>
+  <path d="M879 191L895 207L931 163" stroke="#F8FAFC" stroke-width="8" stroke-linecap="round" stroke-linejoin="round"/>
+</svg>

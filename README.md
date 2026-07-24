@@ -6,9 +6,23 @@
 
 `Spring Boot 3` · `Spring Cloud Alibaba` · `RocketMQ` · `PostgreSQL` · `pgvector` · `Vue` · `React`
 
+<br />
+
+<img src="assets/devnexus-banner.svg" alt="DevNexus AI" width="100%" />
+
 </div>
 
 ---
+
+## 关于项目
+
+DevNexus AI 是我的个人学习与求职作品集，包含技术社区、微服务、可靠消息、RAG 与 Agent 等方向的实践。
+
+如果你对项目复现、技术方案或简历项目表达感兴趣，可以通过 GitHub Issue 与我交流。如果这个项目对你有所帮助，欢迎点一个 ⭐ **Star**，这会鼓励我继续维护和完善它。
+
+<p align="center">
+  <img src="assets/devnexus-overview.svg" alt="DevNexus AI 项目组成" width="100%" />
+</p>
 
 ## 项目组成
 
@@ -177,14 +191,6 @@ cd ../ragent
 本项目的社区后端、微服务、消息链路和 RAG 服务已经具备可运行实现，前端页面、交互体验及部分工程化配置仍在持续完善。
 
 如果你擅长 Vue、React、UI 设计或前后端联调，欢迎提交 Issue 或 Pull Request。功能建议、问题反馈和代码优化也同样欢迎。
-
-## 关于项目
-
-这是我的个人学习与求职作品集，主要用于实践技术社区、微服务、可靠消息、RAG 与 Agent 等技术。
-
-如果你对项目复现、技术方案或简历项目表达感兴趣，可以通过 GitHub Issue 与我交流。
-
-如果这个项目对你有所帮助，欢迎点一个 ⭐ **Star**，这会鼓励我继续维护和完善它。
 
 ## 许可
 
