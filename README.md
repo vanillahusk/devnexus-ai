@@ -55,13 +55,6 @@ DevNexus AI 是我的个人学习与求职作品集，包含技术社区、微�
 | Docker / Docker Compose | 当前稳定版本 |
 | 命令行工具 | `curl`、`nc` |
 
-## 获取代码
-
-```bash
-git clone git@github.com:VanillaCreamyy/devnexus-ai.git
-cd devnexus-ai
-```
-
 ## 启动社区服务
 
 ### 1. 安装动态线程池 Starter
