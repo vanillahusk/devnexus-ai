@@ -261,7 +261,7 @@
         </dependency>
 
         <dependency>
-            <groupId>com.interview</groupId>
+            <groupId>io.devnexus</groupId>
             <artifactId>dynamic-tp-spring-boot-starter</artifactId>
             <version>1.0.0-SNAPSHOT</version>
         </dependency>

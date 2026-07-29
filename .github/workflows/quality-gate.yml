@@ -1,0 +1,63 @@
+name: Quality Gate
+
+on:
+  push:
+    branches: [main]
+  pull_request:
+
+permissions:
+  contents: read
+
+jobs:
+  vue-community:
+    runs-on: ubuntu-latest
+    defaults:
+      run:
+        working-directory: community/pai-coding-front
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 20
+          cache: npm
+          cache-dependency-path: community/pai-coding-front/package-lock.json
+      - run: npm ci
+      - run: npm run type-check
+      - run: npm test
+      - run: npm run build
+
+  react-console:
+    runs-on: ubuntu-latest
+    defaults:
+      run:
+        working-directory: ragent/frontend
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 20
+          cache: npm
+          cache-dependency-path: ragent/frontend/package-lock.json
+      - run: npm ci
+      - run: npm run type-check
+      - run: npm test
+      - run: npm run build
+
+  community-agent-facade:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-java@v4
+        with:
+          distribution: temurin
+          java-version: 17
+          cache: maven
+      - name: Install bundled dynamic thread pool starter
+        working-directory: dynamic-tp
+        run: mvn -B -pl dynamic-tp-spring-boot-starter -am install -DskipTests
+      - name: Test community Agent facade
+        working-directory: community
+        run: >-
+          mvn -B -pl paicoding-web -am
+          -Dtest=RagentAiAgentServiceImplTest
+          -Dsurefire.failIfNoSpecifiedTests=false test
