@@ -138,6 +138,11 @@ public class AiKnowledgeProperties {
         private String chatPath = "/rag/v3/chat";
 
         /**
+         * 受控 Agent 同步查询路径。
+         */
+        private String agentPath = "/rag/agent/query";
+
+        /**
          * 可直接复用的鉴权 token
          */
         private String token;
@@ -167,6 +172,11 @@ public class AiKnowledgeProperties {
         private int connectTimeoutMs = 500;
 
         private int readTimeoutMs = 2500;
+
+        /**
+         * Agent 内部有 30 秒硬边界，门面读取超时需略大于该值。
+         */
+        private int agentReadTimeoutMs = 35000;
 
         /** 文档异步分块、Embedding 和向量写入的最大确认时间。 */
         private int chunkWaitTimeoutMs = 60000;

@@ -9,6 +9,20 @@ export default defineConfig({
       "@": path.resolve(__dirname, "./src")
     }
   },
+  build: {
+    rollupOptions: {
+      output: {
+        manualChunks: {
+          "react-vendor": ["react", "react-dom", "react-router-dom", "zustand"],
+          "markdown-vendor": [
+            "react-markdown",
+            "react-syntax-highlighter",
+            "remark-gfm"
+          ]
+        }
+      }
+    }
+  },
   server: {
     port: 5173,
     proxy: {

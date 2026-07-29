@@ -132,14 +132,12 @@
 import type { ArticleDetailResponse } from '@/http/ResponseTypes/ArticleDetailResponseType'
 import CommentItem from '@/components/comment/CommentItem.vue'
 import { useGlobalStore } from '@/stores/global'
-import { inject, onMounted, ref } from 'vue'
-import { ChatSquare, StarFilled } from '@element-plus/icons-vue'
-import { doPost } from '@/http/BackendRequests'
-import { COMMENT_SUBMIT_URL } from '@/http/URL'
+import { inject, ref } from 'vue'
+import { ChatSquare } from '@element-plus/icons-vue'
 import { messageTip } from '@/util/utils'
-import type { CommonResponse } from '@/http/ResponseTypes/CommonResponseType'
 import type { ArticleCommentType } from '@/http/ResponseTypes/CommentType/ArticleCommentType'
 import type { ArticleType } from '@/http/ResponseTypes/ArticleType/ArticleType'
+import { submitComment } from '@/services/comment'
 // 全局的用户信息
 const globalStore = useGlobalStore()
 const global = globalStore.global
@@ -160,14 +158,14 @@ const commentSubmit = () => {
     }
     return
   }
-  doPost<CommonResponse>(COMMENT_SUBMIT_URL, {
+  submitComment({
     articleId: props.article.articleId,
     commentContent: textarea.value,
   }).then((response) => {
-    messageTip(response.data.result?.commentPending ? '评论已提交，稍后展示' : '评论成功', 'success')
+    messageTip(response.result?.commentPending ? '评论已提交，稍后展示' : '评论成功', 'success')
     textarea.value = ''
     if (updateArticleComment) {
-      updateArticleComment(response.data.result)
+      updateArticleComment(response.result)
     }else{
       console.error('updateArticle is not defined')
     }

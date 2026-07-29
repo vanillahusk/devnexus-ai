@@ -2,7 +2,7 @@
 set -euo pipefail
 
 ROOT_DIR="$(cd "$(dirname "${BASH_SOURCE[0]}")/.." && pwd)"
-RAGENT_PROJECT_DIR="${RAGENT_PROJECT_DIR:-${ROOT_DIR}/../ragent}"
+RAGENT_PROJECT_DIR="${RAGENT_PROJECT_DIR:-${ROOT_DIR}/../ragent-main}"
 ARTICLES="${ROOT_DIR}/paicoding-web/src/test/resources/rag/legacy-baseline-articles.tsv"
 QUERIES="${ROOT_DIR}/paicoding-web/src/test/resources/rag/legacy-baseline-queries.tsv"
 REPORT="${ROOT_DIR}/docs/perf/现代RAG_BM25离线评测报告.md"

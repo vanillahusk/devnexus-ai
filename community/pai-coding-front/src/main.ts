@@ -1,7 +1,8 @@
 import './assets/main.css'
+import './styles/tokens.css'
+import './styles/global.css'
 
 import { createApp, defineComponent, h } from 'vue'
-import { createPinia } from 'pinia'
 import ElementPlus  from 'element-plus'
 import zhCn from 'element-plus/es/locale/lang/zh-cn'
 // 导入css样式
@@ -10,6 +11,7 @@ import "./index.css"
 
 import App from './App.vue'
 import router from './router'
+import { pinia } from './app/pinia'
 
 
 // markdown插件
@@ -25,7 +27,7 @@ const app = createApp(App)
 // eslint-disable-next-line vue/no-reserved-component-names,vue/multi-word-component-names
 app.component('H2', H2)
 
-app.use(createPinia())
+app.use(pinia)
 app.use(router)
 
 // ....

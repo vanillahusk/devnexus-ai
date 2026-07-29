@@ -1,77 +1,57 @@
-## 写在前面
+# DevNexus AI Community
 
-本项目是技术派项目的一个重构版本，搭配使用Spring Boot3重构的后端食用
+DevNexus AI 的社区主站与作品集入口，基于 Vue 3、TypeScript、Vite、Pinia 和 Element Plus。
 
-## 配套服务
+## 页面职责
 
-1. **前后端分离网址**：[https://www.xuyifei.site](http://www.xuyifei.site)
-2. **技术派管理端源码**：[paicoding-admin](https://github.com/itwanger/paicoding-admin)
+- 社区首页、文章、评论、通知和用户页面；
+- 项目能力、验证指标与运行状态展示；
+- 面向登录用户的受控 Agent 问答和文章引用；
+- 只调用社区 Gateway，不在浏览器中保存 RAG 服务凭据。
 
-## 项目介绍
+社区 Agent 门面目前使用同步 HTTP。页面的“停止等待”会取消当前浏览器请求，但不代表服务端任务已撤销；真实 SSE 和服务端协作取消仍是后续能力。
 
-### 项目演示
+## 本地运行
 
-### 前台用Vue3重构后的效果
+要求 Node.js 20+。先复制公开配置：
 
-可以直接浏览本人的[上线网站](https://www.xuyifei.site)（求各位不要进行攻击，友好交流，本人还只是个学森）
-
-部分效果如下：
-
-- 首页
-![](https://xuyifei-oss.oss-cn-beijing.aliyuncs.com/commons/tech-pai-1.png)
-![](https://xuyifei-oss.oss-cn-beijing.aliyuncs.com/commons/tech-pai-2.png)
-- 教程（专栏）页
-![](https://xuyifei-oss.oss-cn-beijing.aliyuncs.com/commons/tech-pai-3.png)
-- 大模型对话
-![](https://xuyifei-oss.oss-cn-beijing.aliyuncs.com/commons/tech-pai-4.png)
-- 更新计划
-![](https://xuyifei-oss.oss-cn-beijing.aliyuncs.com/commons/tech-pai-5.png)
-
-### 代码展示
-
-![](https://xuyifei-oss.oss-cn-beijing.aliyuncs.com/commons/tech-pai-front-code-1.png)
-![](https://xuyifei-oss.oss-cn-beijing.aliyuncs.com/commons/tech-pai-front-code-2.png)
-
-
-## 项目结构
-
-### 组织结构
-```
-src
-├── assets -- 主要是一些css
-├── components -- 项目中拆分出来的组件，包括头部、底部、侧边栏等；以及不同页面下为了代码实现整洁而抽象出的模块
-├── constants -- 一些常量的定义，便于在组件中实现类似的逻辑时可以直接引用常量
-├── http -- 包含两部分，一部分是用于网络通信时，对后端响应做的类型定义；另一部分是用于发起请求的axios实例和函数
-├── plugins -- Web模块、HTTP入口、项目启动入口，包括权限身份校验、全局异常处理等
-├── router -- vue router的配置
-├── stores -- 目前只是用于存储后端发挥的global信息，详见技术派的后端实现中的GlobalInfoVo
-├── util -- 封装了一些工具函数
-├── view -- 具体的不同vue页面
-
+```bash
+cp .env.example .env
+npm ci
+npm run dev
 ```
 
-### 环境配置说明
+开发服务器固定使用 `http://localhost:5174`，可与 `5173` 端口的 React 管理台同时运行。
 
-- 本项目使用的是Vue3，所以需要安装Vue3的环境
-- 后端的地址目前配置相对捡漏，需要在`src/http/URL.ts`中配置`BASE_URL`和`WS_URL`，分别对应后端的HTTP和WebSocket地址
-- 其余配置只需要运行 
-    ``` bash
-    npm install
-    ``` 
-    即可
+服务化模式下，`VITE_API_BASE_URL` 应指向 Gateway，默认开发地址为：
 
-## 技术选型
-### 前端主要使用的库如下
+```dotenv
+VITE_API_BASE_URL=http://localhost:10010
+VITE_WS_BASE_URL=ws://localhost:10010
+```
 
-|         技术          | 说明                                                                             | 官网                                                                                                |
-|:-------------------:|--------------------------------------------------------------------------------|---------------------------------------------------------------------------------------------------|
-|        Vue3         | 强大的前端开发框架                                                                      | [https://cn.vuejs.org/](https://cn.vuejs.org/)                                                          |
-|        Axios        | 一个基于 promise 的网络请求库，可以用于浏览器和 node.js                                           | [https://www.axios-http.cn/](https://www.axios-http.cn/)                  |
-|    Element-Plus     | 基于 Vue 3，面向设计师和开发者的组件库                                                         | [https://element-plus.org/zh-CN/](https://element-plus.org/zh-CN/)                                                      |
-|      data-fns       | 现代的JavaScript日期工具库                                                             | [https://date-fns.org/](https://date-fns.org/)                                                    |
-|    md-editor-v3     | Markdown编辑器Vue3版本，使用jsx和typescript语法开发，支持切换主题、prettier美化文本等                    | [https://imzbf.github.io/md-editor-v3/en-US/index](https://imzbf.github.io/md-editor-v3/en-US/index) |
-|    elasticsearch    | 近实时文本搜索                                                                        | [https://www.elastic.co/cn/elasticsearch/service](https://www.elastic.co/cn/elasticsearch/service) |
-|       stompjs       | 为浏览器提供STOPM客户端的库                                                               | [https://www.npmjs.com/package/stompjs](https://www.npmjs.com/package/stompjs)                                                              |
-|     tailwindcss     | 一个实用优先的 CSS 框架，包含了诸如 flex、pt-4、text-center 和 rotate-90 等类，可以直接在你的标记中组合来构建任何设计。 | [https://tailwindcss.com/](https://tailwindcss.com/)                                              |
-|    node-vibrant     | 一个基于Node.js 的库，它利用智能算法从图像中抽取主要和次要色调，生成色彩丰富的色板                                  | [https://github.com/Vibrant-Colors/node-vibrant](https://github.com/Vibrant-Colors/node-vibrant)                                              |
-|     vue-router      | Vue.js的官方路由                                                                    | [https://router.vuejs.org/zh/](https://router.vuejs.org/zh/)                                                            |
+如需直接连接社区单体，可将地址改为 `http://localhost:8081`。所有 `VITE_*` 变量都会进入浏览器产物，禁止填写 API Key、数据库密码或内部服务 Token。
+
+## 质量检查
+
+```bash
+npm run type-check
+npm run lint
+npm test
+npm run build
+```
+
+当前测试覆盖请求拦截器、登录守卫、Agent 成功/失败/取消状态以及引用渲染。
+
+## 目录
+
+```text
+src/
+├── config/       运行时公开配置
+├── features/     Agent 等业务特性
+├── services/     类型化 HTTP 服务
+├── shared/       通用展示组件
+├── stores/       Pinia 全局状态
+├── styles/       Design Tokens 与全局样式
+└── views/        路由页面
+```

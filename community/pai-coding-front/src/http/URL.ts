@@ -1,11 +1,10 @@
 // ============= 后端请求的地址 =============
-// 后端接口地址
+import { runtimeConfig } from '@/config/runtime'
 
-export const EXCEL_PROCESS_BASE_URL = "https://www.xuyifei.site:5000"
-
-//
-export const BASE_URL = "http://localhost:8081"
-export const WS_URL = "ws://localhost:8081"
+// 后端接口地址统一从 Vite 环境变量读取。
+export const EXCEL_PROCESS_BASE_URL = runtimeConfig.excelServiceBaseUrl
+export const BASE_URL = runtimeConfig.apiBaseUrl
+export const WS_URL = runtimeConfig.wsBaseUrl
 
 
 // 获得global信息还有siteInfo信息
@@ -36,6 +35,7 @@ export const COMMENT_SUBMIT_URL = "comment/api/save"
 
 // AI 知识助手
 export const AI_ASSISTANT_ASK_URL = "/ai/assistant/api/ask"
+export const AI_AGENT_QUERY_URL = "/ai/agent/api/query"
 
 
 // ############# 首页相关的请求 #############

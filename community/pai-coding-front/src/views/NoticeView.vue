@@ -55,6 +55,10 @@
     </div>
 <!--  评论页  -->
     <div class="notice-content">
+      <div v-if="errorMessage" class="notice-error" role="alert">
+        <span>{{ errorMessage }}</span>
+        <button type="button" @click="getNotices">重新加载</button>
+      </div>
       <div v-if="currentTab === NoticeTypeEnum.COMMENT_TYPE" id="itemList">
         <el-skeleton :loading="loading" :throttle="200">
           <template #template>
@@ -192,12 +196,9 @@
 import Footer from '@/components/layout/Footer.vue'
 import HeaderBar from '@/components/layout/HeaderBar.vue'
 import { useGlobalStore } from '@/stores/global'
-import { computed, onMounted, provide, reactive, ref, watch } from 'vue'
+import { computed, onMounted, provide, ref, watch } from 'vue'
 import { useRoute, useRouter } from 'vue-router'
-import { doGet } from '@/http/BackendRequests'
-import type { CommonResponse } from '@/http/ResponseTypes/CommonResponseType'
 import { defaultNoticeMsgResponse, type NoticeMsgResponseType } from '@/http/ResponseTypes/NoticeMsgResponseType'
-import { UNREAD_NOTICE_URL } from '@/http/URL'
 import LoginDialog from '@/components/dialog/LoginDialog.vue'
 import NoticeComment from '@/views/notice/NoticeComment.vue'
 import { NoticeTypeEnum } from '@/constants/NoticeTypeConstants'
@@ -206,13 +207,14 @@ import NoticeSystem from '@/views/notice/NoticeSystem.vue'
 import NoticeFollow from '@/views/notice/NoticeFollow.vue'
 import NoticeCollect from '@/views/notice/NoticeCollect.vue'
 import NoticePraise from '@/views/notice/NoticePraise.vue'
+import { fetchNotices } from '@/services/message'
 const globalStore = useGlobalStore()
-const global = globalStore.global
 const route = useRoute()
 const router = useRouter()
 
 // 骨架屏
 const loading = ref(true)
+const errorMessage = ref('')
 
 // 分页信息
 const currentPage = ref<{[key: string]: number}>({
@@ -262,32 +264,36 @@ const unreadCount = ref<{[key: string]: number}>({
 
 
 onMounted(() => {
-  getNotices()
+  void getNotices()
   // 清除当前tab下的未读信息状态
   unreadCount.value[`${route.params.noticeType}`] = 0
 })
 
-watch(() => route.params.noticeType, (newVal, oldVal) => {
-  getNotices()
+watch(() => route.params.noticeType, () => {
+  void getNotices()
   // 清除当前tab下的未读信息状态
   unreadCount.value[`${route.params.noticeType}`] = 0
 })
 
-const getNotices = () => {
-  doGet<CommonResponse<NoticeMsgResponseType>>(UNREAD_NOTICE_URL + '/' + route.params.noticeType, {
-    currentPage: currentPage.value[`${route.params.noticeType}`],
-    pageSize: pageSize.value[`${route.params.noticeType}`]
-  })
-    .then((res) => {
-      console.log(res)
-      globalStore.setGlobal(res.data.global)
-      Object.assign(noticeData.value[`${route.params.noticeType}`], res.data.result)
-      Object.assign(unreadCount.value, res.data.result.unreadCountMap)
-      totalPage.value[`${route.params.noticeType}`] = Number(res.data.result.list.pages)
+const getNotices = async () => {
+  const noticeType = String(route.params.noticeType ?? NoticeTypeEnum.COMMENT_TYPE)
+  loading.value = true
+  errorMessage.value = ''
+  try {
+    const response = await fetchNotices(noticeType, {
+      currentPage: currentPage.value[noticeType],
+      pageSize: pageSize.value[noticeType]
     })
-    .finally(() => {
-      loading.value = false
-    })
+    globalStore.setGlobal(response.global)
+    Object.assign(noticeData.value[noticeType], response.result)
+    Object.assign(unreadCount.value, response.result.unreadCountMap)
+    totalPage.value[noticeType] = Number(response.result.list.pages)
+  } catch (error) {
+    errorMessage.value =
+      error instanceof Error ? error.message : '消息列表加载失败'
+  } finally {
+    loading.value = false
+  }
 }
 
 
@@ -299,11 +305,11 @@ const currentTab = computed(() => {
 // 分页
 const onCurrentPageChange = (newCurrentPage: number) => {
   currentPage.value[`${route.params.noticeType}`] = newCurrentPage
-  getNotices()
+  void getNotices()
 }
 const onPageSizeChange = (newPageSize: number) => {
   pageSize.value[`${route.params.noticeType}`] = newPageSize
-  getNotices()
+  void getNotices()
 }
 
 // 点击各个按钮切换通知类型
@@ -330,6 +336,32 @@ const loginDialogClicked = ref(false)
 
 
 <style scoped>
+
+.notice-error {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: var(--space-4);
+  margin-bottom: var(--space-4);
+  padding: var(--space-4);
+  border: 1px solid #f1d7b7;
+  border-radius: var(--radius-md);
+  background: #fff9f0;
+  color: var(--color-warning);
+  font-size: 0.82rem;
+}
+
+.notice-error button {
+  flex: none;
+  padding: 0.5rem 0.75rem;
+  border: 0;
+  border-radius: var(--radius-sm);
+  background: var(--color-text);
+  color: white;
+  cursor: pointer;
+  font-size: 0.75rem;
+  font-weight: 680;
+}
 
 .resized-text-size{
   font-size: 1.125rem/* 18px */;

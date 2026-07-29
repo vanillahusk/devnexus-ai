@@ -2,7 +2,7 @@
 set -euo pipefail
 
 ROOT_DIR="$(cd "$(dirname "${BASH_SOURCE[0]}")/.." && pwd)"
-RAGENT_PROJECT_DIR="${RAGENT_PROJECT_DIR:-${ROOT_DIR}/../ragent}"
+RAGENT_PROJECT_DIR="${RAGENT_PROJECT_DIR:-${ROOT_DIR}/../ragent-main}"
 BUILD_TIMEOUT_SECONDS="${RAGENT_BUILD_TIMEOUT_SECONDS:-480}"
 BUILD_LOG="${RAGENT_BUILD_LOG:-${ROOT_DIR}/.runtime/ragent-integration/ragent-build.log}"
 

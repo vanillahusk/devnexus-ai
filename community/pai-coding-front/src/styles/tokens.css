@@ -1,0 +1,49 @@
+:root {
+  --color-brand: #635bff;
+  --color-brand-strong: #4938d1;
+  --color-brand-soft: #eeecff;
+  --color-accent: #00a88f;
+  --color-accent-soft: #dffaf5;
+  --color-background: #f6f7fb;
+  --color-surface: #ffffff;
+  --color-surface-muted: #f3f4f8;
+  --color-text: #182033;
+  --color-text-secondary: #4d5870;
+  --color-text-muted: #78839a;
+  --color-border-subtle: #e5e8f0;
+  --color-danger: #d64545;
+  --color-warning: #b96b07;
+
+  --font-display: Inter, 'SF Pro Display', 'PingFang SC', 'Microsoft YaHei', sans-serif;
+  --font-body: Inter, 'SF Pro Text', 'PingFang SC', 'Microsoft YaHei', sans-serif;
+
+  --space-1: 0.25rem;
+  --space-2: 0.5rem;
+  --space-3: 0.75rem;
+  --space-4: 1rem;
+  --space-5: 1.25rem;
+  --space-6: 1.5rem;
+  --space-8: 2rem;
+  --space-10: 2.5rem;
+  --space-12: 3rem;
+  --space-16: 4rem;
+
+  --radius-sm: 0.5rem;
+  --radius-md: 0.75rem;
+  --radius-lg: 1rem;
+  --radius-xl: 1.4rem;
+  --shadow-sm: 0 1px 2px rgb(20 28 45 / 5%);
+  --shadow-md: 0 12px 35px rgb(34 40 68 / 8%);
+  --shadow-lg: 0 25px 70px rgb(41 35 98 / 14%);
+
+  --content-width: 1180px;
+  --header-height: 68px;
+  --footer-height: 120px;
+
+  /* Legacy compatibility while old pages are migrated. */
+  --pai-brand-1-normal: var(--color-brand);
+  --pai-brand-2-hover: var(--color-brand-strong);
+  --pai-brand-3-click: var(--color-brand-strong);
+  --active-element-color: var(--color-brand);
+  --active-background-color: var(--color-brand-soft);
+}

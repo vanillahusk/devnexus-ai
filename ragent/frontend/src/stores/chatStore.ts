@@ -8,10 +8,7 @@ import {
   deleteSession as deleteSessionRequest,
   renameSession as renameSessionRequest
 } from "@/services/sessionService";
-import { stopTask, submitFeedback } from "@/services/chatService";
-import { buildQuery } from "@/utils/helpers";
-import { createStreamResponse } from "@/hooks/useStreamResponse";
-import { storage } from "@/utils/storage";
+import { createChatStream, stopTask, submitFeedback } from "@/services/chatService";
 
 interface ChatState {
   sessions: Session[];
@@ -69,7 +66,7 @@ function computeThinkingDuration(startAt?: number | null) {
   return Math.max(1, seconds);
 }
 
-const API_BASE_URL = (import.meta.env.VITE_API_BASE_URL || "").replace(/\/$/, "");
+const CANCEL_FALLBACK_MS = 3_000;
 
 export const useChatStore = create<ChatState>((set, get) => ({
   sessions: [],
@@ -196,16 +193,16 @@ export const useChatStore = create<ChatState>((set, get) => ({
     } finally {
       if (get().currentSessionId !== sessionId) {
         set({ isLoading: false });
-        return;
+      } else {
+        set({
+          isLoading: false,
+          isStreaming: false,
+          streamTaskId: null,
+          streamAbort: null,
+          streamingMessageId: null,
+          cancelRequested: false
+        });
       }
-      set({
-        isLoading: false,
-        isStreaming: false,
-        streamTaskId: null,
-        streamAbort: null,
-        streamingMessageId: null,
-        cancelRequested: false
-      });
     }
   },
   updateSessionTitle: (sessionId, title) => {
@@ -256,14 +253,6 @@ export const useChatStore = create<ChatState>((set, get) => ({
     }));
 
     const conversationId = get().currentSessionId;
-    const query = buildQuery({
-      question: trimmed,
-      conversationId: conversationId || undefined,
-      deepThinking: deepThinkingEnabled ? true : undefined
-    });
-    const url = `${API_BASE_URL}/rag/v3/chat${query}`;
-    const token = storage.getToken();
-
     const handlers = {
       onMeta: (payload: { conversationId: string; taskId: string }) => {
         if (get().streamingMessageId !== assistantId) return;
@@ -421,11 +410,11 @@ export const useChatStore = create<ChatState>((set, get) => ({
       }
     };
 
-    const { start, cancel } = createStreamResponse(
+    const { start, cancel } = createChatStream(
       {
-        url,
-        headers: token ? { Authorization: token } : undefined,
-        retryCount: 1
+        question: trimmed,
+        conversationId: conversationId || undefined,
+        deepThinking: deepThinkingEnabled ? true : undefined
       },
       handlers
     );
@@ -452,12 +441,45 @@ export const useChatStore = create<ChatState>((set, get) => ({
     }
   },
   cancelGeneration: () => {
-    const { isStreaming, streamTaskId } = get();
+    const { isStreaming, streamTaskId, streamingMessageId } = get();
     if (!isStreaming) return;
     set({ cancelRequested: true });
     if (streamTaskId) {
       stopTask(streamTaskId).catch(() => null);
     }
+    globalThis.setTimeout(() => {
+      const state = get();
+      if (
+        !state.cancelRequested ||
+        state.streamingMessageId !== streamingMessageId
+      ) {
+        return;
+      }
+      state.streamAbort?.();
+      set((current) => ({
+        isStreaming: false,
+        thinkingStartAt: null,
+        streamTaskId: null,
+        streamAbort: null,
+        streamingMessageId: null,
+        cancelRequested: false,
+        messages: current.messages.map((message) => {
+          if (message.id !== streamingMessageId) return message;
+          const suffix = message.content.includes("（已停止生成）")
+            ? ""
+            : "\n\n（已停止生成）";
+          return {
+            ...message,
+            content: message.content + suffix,
+            status: "cancelled",
+            isThinking: false,
+            thinkingDuration:
+              message.thinkingDuration ??
+              computeThinkingDuration(current.thinkingStartAt)
+          };
+        })
+      }));
+    }, CANCEL_FALLBACK_MS);
   },
   appendStreamContent: (delta) => {
     if (!delta) return;

@@ -1,59 +1,93 @@
 <template>
-  <footer class="footer-wrap">
-    <div class="foot">
+  <footer class="app-footer">
+    <div class="app-footer__inner page-shell">
       <div>
-        <a class="text-reset" href="https://beian.miit.gov.cn" target="_blank">
-          <span>{{global.siteInfo.websiteRecord}}</span>
-        </a>
-        <a class="text-reset"
-           href="http://xuyifei.site"
-           target="_blank">
-          小灰灰
-          {{'© 2024-' + format(new Date(), 'yyyy') + ' 编程汇 '}}
+        <strong>DevNexus AI</strong>
+        <p>一个用于学习可靠消息、微服务治理与现代 RAG 的个人工程项目。</p>
+      </div>
+      <div class="app-footer__links">
+        <RouterLink to="/about">项目介绍</RouterLink>
+        <RouterLink to="/chat">AI 助手</RouterLink>
+        <a
+          href="https://github.com/vanillahusk/devnexus-ai"
+          target="_blank"
+          rel="noreferrer"
+        >
+          GitHub
         </a>
       </div>
-      <div class="stats-container">
-        <div class="stats-row">
-          本站总PV&nbsp;&nbsp;
-        <span class="visit_cnt">
-          {{global.siteStatisticInfo.pv}}
-        </span>
-          &nbsp;&nbsp;总UV&nbsp;&nbsp;
-        <span class="visit_cnt">
-          {{global.siteStatisticInfo.uv}}
-        </span>
-        </div>
-        <div class="stats-row">
-          &nbsp;&nbsp;今日PV&nbsp;&nbsp;
-        <span class="visit_cnt">
-          {{global.todaySiteStatisticInfo.pv}}
-        </span>
-          &nbsp;&nbsp;UV&nbsp;&nbsp;
-        <span class="visit_cnt" >
-          {{global.todaySiteStatisticInfo.uv}}
-        </span>
-          &nbsp;&nbsp;此时&nbsp;&nbsp;<span class="visit_cnt">{{global.onlineCnt}}</span>&nbsp;&nbsp;人在线
-        </div>
-      </div>
+      <small>© 2026 DevNexus AI · Built with evidence, not buzzwords.</small>
     </div>
   </footer>
 </template>
 
 <script setup lang="ts">
+import { RouterLink } from 'vue-router'
 
-import { format }  from 'date-fns'
-import { useGlobalStore } from '@/stores/global'
-const globalStore = useGlobalStore()
-
-const global = globalStore.global
+defineOptions({
+  name: 'AppFooter'
+})
 </script>
 
-
 <style scoped>
-
-.footer-wrap{
-  width: 100%;
-  height: var(--footer-height);
+.app-footer {
+  margin-top: var(--space-16);
+  border-top: 1px solid var(--color-border-subtle);
+  background: rgb(255 255 255 / 72%);
 }
 
+.app-footer__inner {
+  display: grid;
+  grid-template-columns: 1fr auto;
+  gap: var(--space-6);
+  align-items: end;
+  padding-block: var(--space-10);
+}
+
+strong {
+  color: var(--color-text);
+  font-family: var(--font-display);
+  font-size: 1rem;
+  font-weight: 750;
+}
+
+p,
+small {
+  color: var(--color-text-muted);
+  font-size: 0.78rem;
+}
+
+p {
+  margin-top: var(--space-2);
+}
+
+small {
+  grid-column: 1 / -1;
+}
+
+.app-footer__links {
+  display: flex;
+  gap: var(--space-5);
+}
+
+.app-footer__links a {
+  color: var(--color-text-secondary);
+  font-size: 0.8rem;
+  font-weight: 650;
+  text-decoration: none;
+}
+
+.app-footer__links a:hover {
+  color: var(--color-brand-strong);
+}
+
+@media (max-width: 640px) {
+  .app-footer__inner {
+    grid-template-columns: 1fr;
+  }
+
+  .app-footer__links {
+    flex-wrap: wrap;
+  }
+}
 </style>

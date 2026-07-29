@@ -20,18 +20,18 @@ export default defineConfig({
   optimizeDeps: {
     include: ['md-editor-v3']
   },
-  // server: {
-  //   proxy: {
-  //     '/': {
-  //       target: 'http://xuyifei.site:8081/',
-  //       changeOrigin: true,
-  //       secure: true,
-  //       rewrite: (path) => {
-  //         // const newPath = path.replace(/^\/api/, '')
-  //         // console.log('Rewritten path:', newPath)
-  //         return path
-  //       }
-  //     }
-  //   }
-  // }
+  build: {
+    rollupOptions: {
+      output: {
+        manualChunks: {
+          'vue-vendor': ['vue', 'vue-router', 'pinia'],
+          'element-vendor': ['element-plus', '@element-plus/icons-vue'],
+          'markdown-vendor': ['md-editor-v3', '@kangc/v-md-editor']
+        }
+      }
+    }
+  },
+  server: {
+    port: 5174
+  }
 })

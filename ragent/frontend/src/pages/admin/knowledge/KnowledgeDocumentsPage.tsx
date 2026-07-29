@@ -1,6 +1,6 @@
 import { useEffect, useRef, useState } from "react";
 import { useNavigate, useParams } from "react-router-dom";
-import { Check, FileUp, FolderOpen, PlayCircle, RefreshCw, Trash2, Pencil, FileBarChart, X } from "lucide-react";
+import { FileUp, FolderOpen, PlayCircle, RefreshCw, Trash2, Pencil, FileBarChart, X } from "lucide-react";
 import { toast } from "sonner";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { useForm } from "react-hook-form";
@@ -976,7 +976,8 @@ const uploadSchema = z
     }
   });
 
-type UploadFormValues = z.infer<typeof uploadSchema>;
+type UploadFormInput = z.input<typeof uploadSchema>;
+type UploadFormValues = z.output<typeof uploadSchema>;
 
 function UploadDialog({ open, onOpenChange, onSubmit }: UploadDialogProps) {
   const [file, setFile] = useState<File | null>(null);
@@ -990,7 +991,7 @@ function UploadDialog({ open, onOpenChange, onSubmit }: UploadDialogProps) {
   const [loadingPipelines, setLoadingPipelines] = useState(false);
   const [maxFileSize, setMaxFileSize] = useState<number>(50 * 1024 * 1024);
 
-  const form = useForm<UploadFormValues>({
+  const form = useForm<UploadFormInput, unknown, UploadFormValues>({
     resolver: zodResolver(uploadSchema),
     defaultValues: {
       sourceType: "file",
@@ -1156,11 +1157,12 @@ function UploadDialog({ open, onOpenChange, onSubmit }: UploadDialogProps) {
       const payload: KnowledgeDocumentUploadPayload = {
         sourceType: values.sourceType,
         file: values.sourceType === "file" ? file : null,
-        sourceLocation: values.sourceType === "url" ? values.sourceLocation.trim() : null,
+        sourceLocation:
+          values.sourceType === "url" ? (values.sourceLocation ?? "").trim() : null,
         scheduleEnabled: values.sourceType === "url" ? values.scheduleEnabled : false,
         scheduleCron:
           values.sourceType === "url" && values.scheduleEnabled
-            ? values.scheduleCron.trim()
+            ? (values.scheduleCron ?? "").trim()
             : null,
         processMode: values.processMode,
         chunkStrategy: values.processMode === "chunk" ? values.chunkStrategy : undefined,

@@ -1,5 +1,25 @@
 <script setup lang="ts">
+import { onMounted } from 'vue'
 import { RouterView } from 'vue-router'
+import { fetchGlobalInfo } from '@/services/global'
+import { useGlobalStore } from '@/stores/global'
+
+const globalStore = useGlobalStore()
+
+onMounted(async () => {
+  if (globalStore.initialized || globalStore.loading) {
+    return
+  }
+  globalStore.setLoading(true)
+  try {
+    globalStore.setGlobal(await fetchGlobalInfo())
+  } catch {
+    // Public pages remain available when the community backend is offline.
+    globalStore.markInitialized()
+  } finally {
+    globalStore.setLoading(false)
+  }
+})
 </script>
 
 <template>

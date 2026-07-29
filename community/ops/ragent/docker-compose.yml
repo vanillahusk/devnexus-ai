@@ -30,8 +30,8 @@ services:
     ports:
       - "5432:5432"
     volumes:
-      - ${RAGENT_PROJECT_DIR:-../../../ragent}/resources/database/schema_pg.sql:/docker-entrypoint-initdb.d/01-schema.sql:ro
-      - ${RAGENT_PROJECT_DIR:-../../../ragent}/resources/database/init_data_pg.sql:/docker-entrypoint-initdb.d/02-data.sql:ro
+      - ${RAGENT_PROJECT_DIR:-../../../ragent-main}/resources/database/schema_pg.sql:/docker-entrypoint-initdb.d/01-schema.sql:ro
+      - ${RAGENT_PROJECT_DIR:-../../../ragent-main}/resources/database/init_data_pg.sql:/docker-entrypoint-initdb.d/02-data.sql:ro
     tmpfs:
       - /var/lib/postgresql/data:size=536870912
     shm_size: 128m

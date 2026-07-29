@@ -2,7 +2,7 @@
 set -Eeuo pipefail
 
 ROOT_DIR="$(cd "$(dirname "${BASH_SOURCE[0]}")/.." && pwd)"
-RAGENT_PROJECT_DIR="${RAGENT_PROJECT_DIR:-${ROOT_DIR}/../ragent}"
+RAGENT_PROJECT_DIR="${RAGENT_PROJECT_DIR:-${ROOT_DIR}/../ragent-main}"
 RUNTIME_DIR="${ROOT_DIR}/.runtime/rag-fault-regression"
 RAGENT_LOG="${RUNTIME_DIR}/ragent-tests.log"
 PAICODING_LOG="${RUNTIME_DIR}/paicoding-web-tests.log"

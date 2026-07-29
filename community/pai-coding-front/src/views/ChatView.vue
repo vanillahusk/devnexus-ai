@@ -1,406 +1,680 @@
 <template>
-  <HeaderBar></HeaderBar>
-  <!-- 导航栏 -->
-  <div class="custom-home">
-    <div class="chat-wrap">
-<!--      <div class="chat-sidebar">-->
-        <!-- 侧边栏 -->
-<!--        <ChatSideBar></ChatSideBar>-->
-<!--      </div>-->
-      <div class="chat-main">
-        <div class="window-header">
-          <div class="window-header-title">
-            <div class="name">
-              <div class="window-header-main-title home_chat-body-title__5S8w4"
-                   v-if="!global.isLogin || !global.user">
-                点击登录，体验编程汇智能对话
-              </div>
-              <div class="chat-annotation active-color" v-else>
-                {{global.user.userName}}
-<!--                <div th:switch="${global.user.starStatus.code}">-->
-<!--                  <a th:case="-1"-->
-<!--                     href="#"-->
-<!--                     class="annotation"-->
-<!--                     data-target="#registerModal"-->
-<!--                     data-toggle="modal"-->
-<!--                  >绑定编程星球，提升每天对话次数</a>-->
-<!--                  <span th:case="0" class="annotation">审核中</span>-->
-<!--                  <span th:case="1" class="annotation">试用中，添加管理员微信 xyf857998989 催审核</span>-->
-<!--                  <div class="c-bubble-trigger com-verification" th:case="2">-->
-<!--                    <i class="verified"></i>-->
-<!--                  </div>-->
-<!--                </div>-->
-                    <span class="annotation">试用中</span>
-                    <div class="c-bubble-trigger com-verification">
-                      <i class="verified"></i>
-                    </div>
-              </div>
+  <HeaderBar />
 
-            </div>
+  <main class="agent-page page-shell">
+    <aside class="agent-sidebar">
+      <div>
+        <p class="agent-sidebar__eyebrow">CONTROLLED AGENT</p>
+        <h1>社区知识助手</h1>
+        <p class="agent-sidebar__intro">
+          只读取已发布社区文章，通过混合检索、精排与引用回答技术问题。
+        </p>
+      </div>
 
-            <div class="window-header-sub-title">与派聪明的 <span id="chatCnt">{{chatUsedCnt}}/{{chatMaxCnt}}</span> 条对话
-              <span>(以天为单位，无限期重置）</span>
-            </div>
-          </div>
-
-          <div class="chat-type">
-            <!-- 加一个下拉框，选项是 OpenAI 讯飞星火 -->
-            <el-select
-              class="w-40"
-              @change="chatTypeChange"
-              v-model="chatType"
-              placeholder="选择对话模型"
-              default-first-option="XUN_FEI_AI"
-            >
-              <el-option
-                :value="AiTypeEnum.XUN_FEI_AI"
-                label="讯飞星火"
-              />
-<!--              <el-option-->
-<!--                :value="AiTypeEnum.PAI_AI"-->
-<!--                label="技术派"-->
-<!--              />-->
-<!--              <el-option-->
-<!--                :value="AiTypeEnum.CHAT_GPT_3_5"-->
-<!--                label="OPENAI"-->
-<!--              />-->
-            </el-select>
-          </div>
-        </div>
-        <div class="overflow-auto flex-grow" ref="chatContent" id="chat-content">
-          <div class="message-content overflow-auto" v-for="(msg, id) in msgRecords[chatType]" :key="id">
-            <div v-if="msg.msgType == 'question'" class="flex justify-end">
-              <p style="background: #FCEAE0" class="center-content p-2 rounded-lg m-1 text-sm">{{msg.question}}</p>
-              <el-avatar :size="35" :src="global.user.photo" class="m-1"></el-avatar>
-            </div>
-            <div v-if="msg.msgType == 'answer'" class="flex justify-start">
-              <el-avatar :size="35" class="m-1 min-w-8" src="https://xuyifei-oss.oss-cn-beijing.aliyuncs.com/tech-pai/images/avatar/llm-avatar1.png"></el-avatar>
-              <p style="background: #F2F2F2" class="center-content p-2 rounded-lg m-1 text-sm"><MdPreview style="font-size: small" :model-value="msg.answer"></MdPreview></p>
-            </div>
-
-            <el-divider v-if="msg.msgType == 'history'">我是可爱的历史记录分割线</el-divider>
-
-          </div>
-          <div v-if="aiLoading" class="flex justify-start">
-            <el-avatar :size="35" class="m-1" src="https://xuyifei-oss.oss-cn-beijing.aliyuncs.com/tech-pai/images/avatar/llm-avatar1.png"></el-avatar>
-            <p style="background: #F2F2F2" class="center-content p-2 rounded-lg m-1 text-sm"> <el-icon :size="20" class="is-loading"><Loading /></el-icon></p>
-          </div>
-        </div>
-
-        <div class="chat-input" id="chat-textarea">
-          <textarea v-model="chatText" id="input-field" class="form-control" rows="3" :placeholder="!global.isLogin || !global.user.userId || chatTextAreaDisabled? '你好，快登录和我对线吧': '可按回车发送'" :disabled="!global.isLogin || !global.user.userId || chatTextAreaDisabled">
-          </textarea>
-
-          <button @click="sendMsg" id="send-btn" :disabled="!global.isLogin || !global.user.userId || chatBtnDisabled">
-            <div class="button_icon-button-icon__qlUH3 no-dark">
-              <svg xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink" width="16" height="16" fill="none"><defs><path id="send-white_svg__a" d="M0 0h16v16H0z"></path></defs><g><mask id="send-white_svg__b" fill="#fff"><use xlink:href="#send-white_svg__a"></use></mask><g mask="url(#send-white_svg__b)"><path transform="translate(1.333 2)" d="M0 4.71 6.67 6l1.67 6.67L12.67 0 0 4.71Z" style="stroke: rgb(255, 255, 255); stroke-width: 1.33333; stroke-opacity: 1; stroke-dasharray: 0, 0;"></path><path transform="translate(8.003 6.117)" d="M0 1.89 1.89 0" style="stroke: rgb(255, 255, 255); stroke-width: 1.33333; stroke-opacity: 1; stroke-dasharray: 0, 0;"></path></g></g></svg>
-            </div>
-            <div v-if="!global.isLogin || !global.user.userId" class="button_icon-button-text__k3vob">等待登录</div>
-            <div v-else class="button_icon-button-text__k3vob">发送</div>
-          </button>
+      <div class="guardrails">
+        <h2>服务端硬约束</h2>
+        <div v-for="guardrail in guardrails" :key="guardrail.label">
+          <span>{{ guardrail.icon }}</span>
+          <p><strong>{{ guardrail.label }}</strong><small>{{ guardrail.note }}</small></p>
         </div>
       </div>
-    </div>
-    <!-- 底部信息 -->
-    <Footer></Footer>
-  </div>
-  <LoginDialog :clicked="loginDialogClicked"></LoginDialog>
+
+      <div class="session-card">
+        <span>SESSION</span>
+        <code>{{ shortSessionId }}</code>
+        <button type="button" @click="chat.clear">新建会话</button>
+      </div>
+    </aside>
+
+    <section class="agent-workspace">
+      <div class="workspace-header">
+        <div>
+          <span class="workspace-header__status"><i></i> Agent 默认受控运行</span>
+          <h2>从社区文章中查找可信答案</h2>
+        </div>
+        <RouterLink to="/about">查看实现说明 →</RouterLink>
+      </div>
+
+      <div ref="messageViewport" class="message-viewport">
+        <div v-if="!chat.hasMessages.value" class="welcome-panel">
+          <div class="welcome-panel__mark">✦</div>
+          <p>你好，我是 DevNexus 知识助手</p>
+          <h3>你想了解哪条工程链路？</h3>
+          <div class="suggestion-grid">
+            <button
+              v-for="question in suggestions"
+              :key="question"
+              type="button"
+              @click="ask(question)"
+            >
+              <span>{{ question }}</span>
+              <i>↗</i>
+            </button>
+          </div>
+        </div>
+
+        <article
+          v-for="message in chat.messages.value"
+          :key="message.id"
+          class="message"
+          :class="`message--${message.role}`"
+        >
+          <div class="message__avatar">{{ message.role === 'user' ? '你' : 'D' }}</div>
+          <div class="message__body">
+            <div class="message__meta">
+              <strong>{{ message.role === 'user' ? '你的问题' : 'DevNexus Agent' }}</strong>
+              <span v-if="message.result">{{ modeLabel(message.result.mode) }}</span>
+            </div>
+
+            <div v-if="message.status === 'waiting'" class="agent-running">
+              <span></span><span></span><span></span>
+              正在规划并检索可信资料
+            </div>
+            <p
+              v-else
+              class="message__content"
+              :class="{ 'message__content--error': message.status === 'error' }"
+            >
+              {{ message.content }}
+            </p>
+
+            <AgentResultPanel v-if="message.result" :result="message.result" />
+          </div>
+        </article>
+      </div>
+
+      <form class="composer" @submit.prevent="ask(input)">
+        <textarea
+          v-model="input"
+          :disabled="chat.running.value"
+          maxlength="500"
+          rows="3"
+          placeholder="例如：为什么 Outbox 不能保证绝对只投递一次？"
+          @keydown.ctrl.enter.prevent="ask(input)"
+        ></textarea>
+        <div class="composer__footer">
+          <span>{{ input.length }} / 500 · Ctrl + Enter 发送</span>
+          <button
+            v-if="chat.running.value"
+            class="cancel-button"
+            type="button"
+            @click="chat.cancel"
+          >
+            停止等待
+          </button>
+          <button
+            v-else
+            class="send-button"
+            type="submit"
+            :disabled="!input.trim()"
+          >
+            发送问题
+            <span>↑</span>
+          </button>
+        </div>
+      </form>
+      <p class="composer-note">
+        Agent 可能出错，请根据引用原文核对。停止等待只会取消浏览器请求，不代表服务端任务已经撤销。
+      </p>
+    </section>
+  </main>
+
+  <Footer />
 </template>
 
 <script setup lang="ts">
-
+import { computed, nextTick, ref } from 'vue'
+import { RouterLink } from 'vue-router'
 import HeaderBar from '@/components/layout/HeaderBar.vue'
 import Footer from '@/components/layout/Footer.vue'
-import LoginDialog from '@/components/dialog/LoginDialog.vue'
-import { useGlobalStore } from '@/stores/global'
-import { nextTick, onMounted, provide, ref } from 'vue'
-import ChatSideBar from '@/views/chat-home/ChatSideBar.vue'
-import { doGet } from '@/http/BackendRequests'
-import type { CommonResponse } from '@/http/ResponseTypes/CommonResponseType'
-import { BASE_URL, GLOBAL_INFO_URL, WS_URL } from '@/http/URL'
-import { getCookie, messageTip } from '@/util/utils'
-//引入使用SockJS
-import Stomp from "stompjs";
-import { Loading, StarFilled } from '@element-plus/icons-vue'
-import { MdPreview } from 'md-editor-v3'
-import '@/assets/llm-answer.css'
-import type { WebSocketRecordsType } from '@/http/ResponseTypes/ChatType/WebSocketRecordsType'
-import type { WebSocketResponseType } from '@/http/ResponseTypes/WebSocketResponseType'
-import { type AiTypeConstants, AiTypeEnum } from '@/constants/AiTypeEnumConstants'
-const globalStore = useGlobalStore()
-const global = globalStore.global
+import { useAgentChat } from '@/features/agent/useAgentChat'
+import AgentResultPanel from '@/features/agent/AgentResultPanel.vue'
+import type { AiAgentReply } from '@/http/ResponseTypes/AiAgentResponseType'
 
-// 聊天次数
-const chatUsedCnt = ref(0)
-const chatMaxCnt = ref(0)
-// 聊天框设置
-const chatText = ref('')
-const chatBtnDisabled = ref(true)
-const chatBtnText = ref('等待登录')
-const chatTextAreaDisabled = ref(true)
-// 动态根据ai的回答变化html
-const chatContent = ref<HTMLElement | null>(null);
-const answers = ref('')
-// 获取JWT token
-const session = getCookie("f-session")
-// 大模型的选择器
-const chatType = ref<AiTypeConstants>('XUN_FEI_AI')
-const chatTypeChange = (value: string ) => {
-  if(global.isLogin){
-    answers.value = ''
-    disconnect()
-    initWs()
+const chat = useAgentChat()
+const input = ref('')
+const messageViewport = ref<HTMLElement | null>(null)
+
+const guardrails = [
+  { icon: '01', label: '最多 3 步', note: '状态机强制限制' },
+  { icon: '02', label: '最多 2 次检索', note: '重复调用自动阻断' },
+  { icon: '30s', label: '总超时边界', note: '失败降级到可信 RAG' },
+  { icon: 'RO', label: '只读工具', note: '禁止写操作与任意 SQL' }
+]
+
+const suggestions = [
+  '为什么 Outbox 不能保证绝对只投递一次？',
+  '点赞取消操作如何防止旧事件覆盖新状态？',
+  '评论链路为什么去掉了 Redis 二级队列？',
+  'RAG 全量重建期间如何避免索引回退？'
+]
+
+const shortSessionId = computed(() => `${chat.sessionId.value.slice(0, 8)}…`)
+
+async function ask(question: string): Promise<void> {
+  if (!question.trim() || chat.running.value) {
+    return
   }
-}
-// stomp协议的客户端
-let stompClient: Stomp.Client | null
-
-const msgRecords = ref<Record<AiTypeConstants, WebSocketRecordsType[]>>({
-  XUN_FEI_AI: [],
-  CHAT_GPT_3_5: [],
-  PAI_AI: []
-})
-const aiLoading = ref(false)
-
-
-// 初始化ws
-const initWs = () => {
-  msgRecords.value[chatType.value] = []
-  let aiType = chatType.value
-  console.log("AITYPE = ", aiType);
-  console.log("session = ", session)
-  let socket = new WebSocket(`${WS_URL}/gpt/${session}/${aiType}`)
-  stompClient = Stomp.over(socket)
-  stompClient.connect({}, function(frame) {
-    console.log('ws连接成功: ' + frame);
-    // 开放按钮和输入框
-    chatBtnDisabled.value = false
-    chatTextAreaDisabled.value = false
-    chatBtnText.value = '发送'
-    // 清空输入框
-    chatText.value = ''
-
-    // @ts-ignore
-    stompClient.subscribe('/user/chat/rsp', function(message: Stomp.Message){
-      // 表示这个长连接，订阅了 "/chat/rsp" , 这样后端向这个路径转发消息时，我们就可以拿到对应的返回
-      // 解析 JSON 字符串
-      console.log("rsp:", message);
-      let res = JSON.parse(message.body);
-      console.log("res:", res);
-
-      chatUsedCnt.value = res.usedCnt
-      chatMaxCnt.value = res.maxCnt
-
-      const data: WebSocketResponseType[] = res.records
-      if (data.length > 1) {
-        // 返回历史全部信息
-        answers.value = ''
-        for (let i = data.length - 1; i >= 0; i--) {
-          if (data[i].question) {
-            addClientMsg(data[i], false);
-          }
-          if (i == 0) {
-            msgRecords.value[chatType.value].push({
-              msgType: 'history'
-            })
-          }
-          appendServerMessage(data[i]);
-        }
-
-
-        if (chatContent.value) {
-          chatContent.value.scrollTop = chatContent.value.scrollHeight;
-        }
-      } else {
-        appendServerMessage(data[0]);
-      }
-
-      // 添加完消息后，除了流式持续返回这种场景，其他的恢复按钮的状态
-      if(data[data.length - 1].answerType != 'STREAM') {
-        chatBtnDisabled.value = false
-      }
-    })
-
+  input.value = ''
+  await chat.submit(question)
+  await nextTick()
+  messageViewport.value?.scrollTo({
+    top: messageViewport.value.scrollHeight,
+    behavior: 'smooth'
   })
-  // 关闭链接
-  socket.onclose = disconnect;
-
 }
 
-function disconnect() {
-  if (stompClient !== null) {
-    stompClient.disconnect(() => {});
+function modeLabel(mode: AiAgentReply['mode']): string {
+  const labels: Record<AiAgentReply['mode'], string> = {
+    AGENT: 'Agent',
+    DIRECT: '直接回答',
+    RAG_FALLBACK: 'RAG 降级',
+    CONTROLLED_FAILURE: '受控失败'
   }
-  console.log("ws中断");
-  stompClient = null;
-  // 提醒用户重新连接
-  chatTextAreaDisabled.value = true
-  chatBtnDisabled.value = false
-  chatBtnText.value = '重连'
+  return labels[mode]
 }
 
-// 添加服务器端消息
-function appendServerMessage(answer: WebSocketResponseType) {
-  let content = answer.answer;
-  let time = answer.answerTime;
-  let answerType = answer.answerType;
-  let chatId = answer.chatUid
-  let appendLastChat = false;
-  aiLoading.value = false
-  // 如果 source 等于"CHAT_GPT_3_5"
-  if("JSON" === answerType) {
-    // 需要对 body 的 JSON 字符串进行解析
-    const res = JSON.parse(content);
-    console.log("CHAT_GPT_3_5 res:", res);
-    if (res.length === 1) {
-      content = res[0].message.content;
-    }
-  } else if ('STREAM' === answerType || 'STREAM_END' === answerType) {
-    // const lastDiv = $(`#${chatId}`)
-    const lastIndex = msgRecords.value[chatType.value].findLastIndex((msg) => msg.msgType === 'answer' && msg.chatUid === chatId)
-    if(lastIndex == -1){
-      // 上一次没有输出过，则格式化文本，重新输出
-    }else{
-      // 对于流式返回的结果，找上一次的返回，进行结果的追加，手动将分隔符给干掉
-      msgRecords.value[chatType.value][lastIndex].answer = content
-      appendLastChat = true
-    }
-
-  }
-
-  if(!appendLastChat) {
-    msgRecords.value[chatType.value].push({
-      msgType: 'answer',
-      answer: content,
-      answerTime: time,
-      chatUid: chatId
-    })
-  }
-  scrollToBottom();
-
-
-  // 添加完后滚动到底部
-  // scrollToBottom();
-
-  // copy();
-
-}
-
-// 添加用户端消息
-function addClientMsg(data: WebSocketResponseType, showLoading: boolean) {
-  msgRecords.value[chatType.value].push({
-    msgType: 'question',
-    question: data.question,
-    questionTime: data.questionTime
-  })
-  // 添加完后滚动到底部
-  scrollToBottom();
-}
-
-
-const scrollToBottom = () => {
-  nextTick(() => {
-    if (chatContent.value) {
-      chatContent.value.scrollTop = chatContent.value.scrollHeight;
-      chatContent.value.scroll({
-        top: chatContent.value.scrollHeight + 100,
-        behavior: 'smooth'
-      });
-    }
-  });
-}
-
-// 复制功能
-// function copy() {
-//   // 从 chatContent 中获取最后一个 chat-message
-//   const chatMessage = chatContent.value.children(".home_chat-message__rdH_g").last();
-//   console.log("chatContent", chatMessage);
-//   // 从 chatMessage 找出复制按钮
-//   const copyBtn = chatMessage.find(".home_chat-message-top-action__wXKmA").get(0);
-//
-//   const clipboard = new ClipboardJS(copyBtn, {
-//     text: function(trigger) {
-//       let copyInput = chatMessage.find('.markdown-body').get(0);
-//       return copyInput.innerText;
-//     }
-//   });
-//
-//   clipboard.on('success', function(e) {
-//     // 复制成功
-//     toastr.info("复制成功");
-//     e.clearSelection();
-//   });
-//
-//   clipboard.on('error', function(e) {
-//     console.log('复制失败');
-//   });
-// }
-
-// 发送问题
-const doSend = () => {
-  const qa = chatText.value
-  if (qa.length > 512) {
-    messageTip("提问长度请不要超过512字符哦~", 'info')
-    return;
-  }
-  // 表示将消息转发到那个目标，类似于http请求中的path路径
-  // @ts-ignore
-  stompClient.send("/app/chat/" + session, {'s-uid': session}, qa);
-  // 清空 textarea
-  chatText.value = ''
-
-  msgRecords.value[chatType.value].push({
-    msgType: 'question',
-    question: qa
-  })
-  aiLoading.value = true
-
-  // 将 button 设为禁用，防止用户连续点击
-  chatBtnDisabled.value = true
-}
-
-// 绑定按钮事件
-const sendMsg = () => {
-  if(stompClient == null){
-    initWs()
-  }else{
-    // 如果消息内容为空的时候重新聚焦到输入框
-    if (chatText.value == '') {
-      messageTip("请输入内容", 'info')
-    } else {
-      // 发送消息
-      doSend();
-    }
-  }
-}
-
-// 获取登录信息
-onMounted(async () => {
-  await doGet<CommonResponse>(GLOBAL_INFO_URL, {})
-    .then((res) => {
-      globalStore.setGlobal(res.data.global)
-    })
-  // 开始进行ws的初始化
-  if(global.isLogin){
-    initWs()
-
-  }else{
-    messageTip("请先登录", 'info')
-  }
-
-  console.log(global.isLogin, global.user.userId, chatTextAreaDisabled.value)
-})
-
-// 登录框
-const changeClicked = () => {
-  loginDialogClicked.value = !loginDialogClicked.value
-  console.log("clicked: ", loginDialogClicked.value)
-}
-
-provide('loginDialogClicked', changeClicked)
-const loginDialogClicked = ref(false)
 </script>
 
 <style scoped>
+.agent-page {
+  display: grid;
+  grid-template-columns: 18rem minmax(0, 1fr);
+  gap: var(--space-5);
+  min-height: calc(100vh - var(--header-height));
+  padding-block: var(--space-8);
+}
 
+.agent-sidebar,
+.agent-workspace {
+  border: 1px solid var(--color-border-subtle);
+  border-radius: var(--radius-xl);
+  background: var(--color-surface);
+  box-shadow: var(--shadow-sm);
+}
+
+.agent-sidebar {
+  display: flex;
+  height: max-content;
+  min-height: 39rem;
+  flex-direction: column;
+  padding: var(--space-6);
+}
+
+.agent-sidebar__eyebrow {
+  color: var(--color-brand-strong);
+  font-size: 0.65rem;
+  font-weight: 780;
+  letter-spacing: 0.14em;
+}
+
+.agent-sidebar h1 {
+  margin-top: var(--space-3);
+  color: var(--color-text);
+  font-family: var(--font-display);
+  font-size: 1.65rem;
+  font-weight: 760;
+  letter-spacing: -0.04em;
+}
+
+.agent-sidebar__intro {
+  margin-top: var(--space-4);
+  color: var(--color-text-muted);
+  font-size: 0.8rem;
+  line-height: 1.7;
+}
+
+.guardrails {
+  margin-top: var(--space-8);
+  padding-top: var(--space-6);
+  border-top: 1px solid var(--color-border-subtle);
+}
+
+.guardrails h2 {
+  margin-bottom: var(--space-4);
+  color: var(--color-text-secondary);
+  font-size: 0.7rem;
+  font-weight: 700;
+}
+
+.guardrails > div {
+  display: flex;
+  gap: var(--space-3);
+  align-items: center;
+  padding-block: var(--space-3);
+}
+
+.guardrails > div > span {
+  display: grid;
+  width: 2.1rem;
+  height: 2.1rem;
+  flex: none;
+  place-items: center;
+  border-radius: var(--radius-sm);
+  background: var(--color-brand-soft);
+  color: var(--color-brand-strong);
+  font-size: 0.58rem;
+  font-weight: 780;
+}
+
+.guardrails strong,
+.guardrails small {
+  display: block;
+}
+
+.guardrails strong {
+  color: var(--color-text-secondary);
+  font-size: 0.76rem;
+  font-weight: 700;
+}
+
+.guardrails small {
+  margin-top: 0.15rem;
+  color: var(--color-text-muted);
+  font-size: 0.65rem;
+}
+
+.session-card {
+  margin-top: auto;
+  padding: var(--space-4);
+  border-radius: var(--radius-md);
+  background: var(--color-surface-muted);
+}
+
+.session-card span,
+.session-card code {
+  display: block;
+}
+
+.session-card span {
+  color: var(--color-text-muted);
+  font-size: 0.55rem;
+  font-weight: 750;
+  letter-spacing: 0.12em;
+}
+
+.session-card code {
+  margin-top: var(--space-2);
+  color: var(--color-text-secondary);
+  font-size: 0.75rem;
+}
+
+.session-card button {
+  width: 100%;
+  margin-top: var(--space-4);
+  padding: 0.58rem;
+  border: 1px solid var(--color-border-subtle);
+  border-radius: var(--radius-sm);
+  background: white;
+  color: var(--color-text-secondary);
+  cursor: pointer;
+  font-size: 0.7rem;
+  font-weight: 680;
+}
+
+.agent-workspace {
+  display: flex;
+  min-width: 0;
+  min-height: 42rem;
+  flex-direction: column;
+  overflow: hidden;
+}
+
+.workspace-header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: var(--space-5);
+  padding: var(--space-5) var(--space-6);
+  border-bottom: 1px solid var(--color-border-subtle);
+}
+
+.workspace-header__status {
+  display: inline-flex;
+  align-items: center;
+  gap: var(--space-2);
+  color: #087463;
+  font-size: 0.62rem;
+  font-weight: 700;
+}
+
+.workspace-header__status i {
+  width: 0.42rem;
+  height: 0.42rem;
+  border-radius: 99px;
+  background: var(--color-accent);
+}
+
+.workspace-header h2 {
+  margin-top: var(--space-1);
+  color: var(--color-text);
+  font-size: 0.95rem;
+  font-weight: 700;
+}
+
+.workspace-header a {
+  color: var(--color-brand-strong);
+  font-size: 0.68rem;
+  font-weight: 680;
+  text-decoration: none;
+}
+
+.message-viewport {
+  flex: 1;
+  max-height: 62vh;
+  overflow-y: auto;
+  padding: var(--space-8);
+  background:
+    radial-gradient(circle at 50% 0, rgb(99 91 255 / 5%), transparent 28rem),
+    #fbfbfd;
+}
+
+.welcome-panel {
+  display: grid;
+  min-height: 26rem;
+  place-items: center;
+  align-content: center;
+  text-align: center;
+}
+
+.welcome-panel__mark {
+  display: grid;
+  width: 3.4rem;
+  height: 3.4rem;
+  place-items: center;
+  border-radius: var(--radius-lg);
+  background: linear-gradient(145deg, var(--color-brand), #8b7fff);
+  box-shadow: 0 16px 32px rgb(99 91 255 / 25%);
+  color: white;
+  font-size: 1.35rem;
+}
+
+.welcome-panel > p {
+  margin-top: var(--space-5);
+  color: var(--color-brand-strong);
+  font-size: 0.68rem;
+  font-weight: 720;
+}
+
+.welcome-panel h3 {
+  margin-top: var(--space-2);
+  color: var(--color-text);
+  font-family: var(--font-display);
+  font-size: clamp(1.65rem, 3vw, 2.35rem);
+  font-weight: 760;
+  letter-spacing: -0.04em;
+}
+
+.suggestion-grid {
+  display: grid;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  gap: var(--space-3);
+  width: min(100%, 42rem);
+  margin-top: var(--space-8);
+}
+
+.suggestion-grid button {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: var(--space-4);
+  padding: var(--space-4);
+  border: 1px solid var(--color-border-subtle);
+  border-radius: var(--radius-md);
+  background: white;
+  color: var(--color-text-secondary);
+  cursor: pointer;
+  font-size: 0.75rem;
+  line-height: 1.5;
+  text-align: left;
+  transition: 160ms ease;
+}
+
+.suggestion-grid button:hover {
+  border-color: color-mix(in srgb, var(--color-brand) 35%, white);
+  box-shadow: var(--shadow-sm);
+  transform: translateY(-1px);
+}
+
+.suggestion-grid i {
+  color: var(--color-brand);
+  font-style: normal;
+}
+
+.message {
+  display: flex;
+  gap: var(--space-4);
+  width: min(100%, 48rem);
+  margin-inline: auto;
+}
+
+.message + .message {
+  margin-top: var(--space-8);
+}
+
+.message__avatar {
+  display: grid;
+  width: 2rem;
+  height: 2rem;
+  flex: none;
+  place-items: center;
+  border-radius: var(--radius-sm);
+  background: var(--color-text);
+  color: white;
+  font-size: 0.7rem;
+  font-weight: 780;
+}
+
+.message--assistant .message__avatar {
+  background: linear-gradient(145deg, var(--color-brand), #8b7fff);
+}
+
+.message__body {
+  min-width: 0;
+  flex: 1;
+}
+
+.message__meta {
+  display: flex;
+  align-items: center;
+  gap: var(--space-3);
+}
+
+.message__meta strong {
+  color: var(--color-text);
+  font-size: 0.75rem;
+  font-weight: 720;
+}
+
+.message__meta span {
+  padding: 0.2rem 0.45rem;
+  border-radius: 999px;
+  background: var(--color-brand-soft);
+  color: var(--color-brand-strong);
+  font-size: 0.55rem;
+  font-weight: 720;
+}
+
+.message__content {
+  margin-top: var(--space-3);
+  color: var(--color-text-secondary);
+  font-size: 0.88rem;
+  line-height: 1.85;
+  white-space: pre-wrap;
+}
+
+.message--user .message__content {
+  display: inline-block;
+  padding: 0.7rem 0.9rem;
+  border-radius: 0 var(--radius-md) var(--radius-md) var(--radius-md);
+  background: var(--color-surface-muted);
+}
+
+.message__content--error {
+  color: var(--color-danger);
+}
+
+.agent-running {
+  display: flex;
+  align-items: center;
+  gap: 0.35rem;
+  margin-top: var(--space-4);
+  color: var(--color-text-muted);
+  font-size: 0.75rem;
+}
+
+.agent-running span {
+  width: 0.42rem;
+  height: 0.42rem;
+  border-radius: 99px;
+  background: var(--color-brand);
+  animation: pulse 1s infinite alternate;
+}
+
+.agent-running span:nth-child(2) {
+  animation-delay: 160ms;
+}
+
+.agent-running span:nth-child(3) {
+  margin-right: var(--space-2);
+  animation-delay: 320ms;
+}
+
+@keyframes pulse {
+  to {
+    opacity: 0.25;
+    transform: translateY(-3px);
+  }
+}
+
+.composer {
+  margin: var(--space-4) var(--space-6) 0;
+  border: 1px solid var(--color-border-subtle);
+  border-radius: var(--radius-lg);
+  background: white;
+  box-shadow: 0 10px 28px rgb(24 32 51 / 7%);
+}
+
+.composer:focus-within {
+  border-color: color-mix(in srgb, var(--color-brand) 50%, white);
+}
+
+.composer textarea {
+  width: 100%;
+  min-height: 4.5rem;
+  padding: var(--space-4);
+  border: 0;
+  background: transparent;
+  color: var(--color-text);
+  font-family: inherit;
+  font-size: 0.82rem;
+  line-height: 1.6;
+  resize: none;
+}
+
+.composer textarea:focus {
+  border: 0;
+  outline: 0;
+}
+
+.composer__footer {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: var(--space-4);
+  padding: 0 var(--space-3) var(--space-3) var(--space-4);
+}
+
+.composer__footer > span {
+  color: var(--color-text-muted);
+  font-size: 0.58rem;
+}
+
+.send-button,
+.cancel-button {
+  padding: 0.58rem 0.75rem;
+  border: 0;
+  border-radius: var(--radius-sm);
+  cursor: pointer;
+  font-size: 0.7rem;
+  font-weight: 700;
+}
+
+.send-button {
+  background: var(--color-text);
+  color: white;
+}
+
+.send-button span {
+  margin-left: var(--space-2);
+}
+
+.send-button:disabled {
+  cursor: not-allowed;
+  opacity: 0.45;
+}
+
+.cancel-button {
+  background: #fff0f0;
+  color: var(--color-danger);
+}
+
+.composer-note {
+  padding: var(--space-2) var(--space-6) var(--space-5);
+  color: var(--color-text-muted);
+  font-size: 0.58rem;
+  text-align: center;
+}
+
+@media (max-width: 900px) {
+  .agent-page {
+    grid-template-columns: 1fr;
+  }
+
+  .agent-sidebar {
+    min-height: 0;
+  }
+
+  .guardrails {
+    display: grid;
+    grid-template-columns: repeat(2, 1fr);
+    gap: 0 var(--space-4);
+  }
+
+  .guardrails h2 {
+    grid-column: 1 / -1;
+  }
+
+  .session-card {
+    margin-top: var(--space-5);
+  }
+}
+
+@media (max-width: 600px) {
+  .agent-page {
+    padding-top: var(--space-4);
+  }
+
+  .guardrails,
+  .suggestion-grid {
+    grid-template-columns: 1fr;
+  }
+
+  .workspace-header {
+    align-items: flex-start;
+    flex-direction: column;
+  }
+
+  .message-viewport {
+    padding: var(--space-5) var(--space-4);
+  }
+
+  .message {
+    gap: var(--space-3);
+  }
+
+  .composer {
+    margin-inline: var(--space-3);
+  }
+}
 </style>

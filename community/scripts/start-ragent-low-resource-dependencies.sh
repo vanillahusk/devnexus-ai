@@ -49,7 +49,7 @@ if [[ "${USE_EXTERNAL_REDIS}" == "true" ]]; then
   echo "Using healthy external Redis at 127.0.0.1:6379; it will not be stopped or removed."
 fi
 
-RAGENT_PROJECT_DIR="${RAGENT_PROJECT_DIR:-${ROOT_DIR}/../ragent}"
+RAGENT_PROJECT_DIR="${RAGENT_PROJECT_DIR:-${ROOT_DIR}/../ragent-main}"
 export RAGENT_PROJECT_DIR
 for required_file in \
   "${RAGENT_PROJECT_DIR}/resources/database/schema_pg.sql" \

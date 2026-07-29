@@ -89,15 +89,17 @@ async function readSseStream(response: Response, handlers: StreamHandlers, signa
     dataLines = [];
   };
 
-  while (true) {
+  let reading = true;
+  while (reading) {
     if (signal?.aborted) {
-      reader.cancel();
+      await reader.cancel();
       break;
     }
     const { value, done } = await reader.read();
     if (done) {
       dispatchEvent();
-      break;
+      reading = false;
+      continue;
     }
     buffer += decoder.decode(value, { stream: true });
     const lines = buffer.split(/\r?\n/);

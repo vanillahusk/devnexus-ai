@@ -2,7 +2,7 @@
 set -euo pipefail
 
 ROOT_DIR="$(cd "$(dirname "${BASH_SOURCE[0]}")/.." && pwd)"
-RAGENT_PROJECT_DIR="${RAGENT_PROJECT_DIR:-${ROOT_DIR}/../ragent}"
+RAGENT_PROJECT_DIR="${RAGENT_PROJECT_DIR:-${ROOT_DIR}/../ragent-main}"
 RAGENT_JAR="${RAGENT_JAR:-${RAGENT_PROJECT_DIR}/bootstrap/target/bootstrap-0.0.1-SNAPSHOT.jar}"
 
 if [[ ! -s "${RAGENT_JAR}" ]]; then

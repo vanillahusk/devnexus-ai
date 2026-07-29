@@ -2,7 +2,7 @@
 set -euo pipefail
 
 ROOT_DIR="$(cd "$(dirname "${BASH_SOURCE[0]}")/.." && pwd)"
-RAGENT_PROJECT_DIR="${RAGENT_PROJECT_DIR:-${ROOT_DIR}/../ragent}"
+RAGENT_PROJECT_DIR="${RAGENT_PROJECT_DIR:-${ROOT_DIR}/../ragent-main}"
 TIMEOUT_SECONDS="${AGENT_EVALUATION_TIMEOUT_SECONDS:-180}"
 
 [[ -f "${RAGENT_PROJECT_DIR}/pom.xml" ]] || {

@@ -43,16 +43,14 @@
 <script setup lang="ts">
 
 import type { ArticleDetailResponse } from '@/http/ResponseTypes/ArticleDetailResponseType'
-import { inject, ref, watch } from 'vue'
+import { inject, ref } from 'vue'
 import { ChatSquare } from '@element-plus/icons-vue'
 import { useGlobalStore } from '@/stores/global'
-import { doGet, doPost } from '@/http/BackendRequests'
-import type { CommonResponse } from '@/http/ResponseTypes/CommonResponseType'
-import { COMMENT_LIKE_URL, COMMENT_SUBMIT_URL } from '@/http/URL'
 import { OperateTypeEnum } from '@/constants/OperateTypeConstants'
 import { messageTip } from '@/util/utils'
 import type { ArticleType } from '@/http/ResponseTypes/ArticleType/ArticleType'
 import type { ArticleCommentType } from '@/http/ResponseTypes/CommentType/ArticleCommentType'
+import { submitComment, toggleCommentLike } from '@/services/comment'
 const globalStore = useGlobalStore()
 const global = globalStore.global
 const showLoginDialog = inject<() => void>('loginDialogClicked')
@@ -88,11 +86,8 @@ const likeComment = () => {
   }
   btnLoading.value = true
   if(commentPraised.value){
-    doGet<CommonResponse>(COMMENT_LIKE_URL, {
-      commentId: props.comment.commentId,
-      type: OperateTypeEnum.CANCEL_PRAISE,
-    })
-      .then((response) => {
+    toggleCommentLike(props.comment.commentId, OperateTypeEnum.CANCEL_PRAISE)
+      .then(() => {
         praiseCnt.value --
         commentPraised.value = false
       }).catch((error) => {
@@ -102,11 +97,8 @@ const likeComment = () => {
         btnLoading.value = false
       })
   }else {
-    doGet<CommonResponse>(COMMENT_LIKE_URL, {
-      commentId: props.comment.commentId,
-      type: OperateTypeEnum.PRAISE,
-    })
-      .then((response) => {
+    toggleCommentLike(props.comment.commentId, OperateTypeEnum.PRAISE)
+      .then(() => {
         praiseCnt.value++
         commentPraised.value = true
       })
@@ -131,17 +123,17 @@ const commentSubmit = () => {
     }
     return
   }
-  doPost<CommonResponse>(COMMENT_SUBMIT_URL, {
+  submitComment({
     articleId: props.article.articleId,
     commentContent: textarea.value,
     parentCommentId: Number(props.comment.commentId),
     topCommentId: Number(props.comment.commentId),
   }).then((response) => {
-    messageTip(response.data.result?.commentPending ? '评论已提交，稍后展示' : '评论成功', 'success')
+    messageTip(response.result?.commentPending ? '评论已提交，稍后展示' : '评论成功', 'success')
     textarea.value = ''
     replyEnabled.value = false
     if (updateArticleComment) {
-      updateArticleComment(response.data.result)
+      updateArticleComment(response.result)
     }else{
       console.error('updateArticle is not defined')
     }

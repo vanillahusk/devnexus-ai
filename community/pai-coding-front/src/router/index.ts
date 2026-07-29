@@ -1,12 +1,17 @@
 import { createRouter, createWebHistory } from 'vue-router'
 import HomeView from '../views/HomeView.vue'
 import { UserHomeTabTypeEnum } from '@/constants/UserHomeTabTypeConstants'
-import {useGlobalSize} from "element-plus";
-import {getGlobalStore, useGlobalStore} from "@/stores/global";
-import {doGet} from "@/http/BackendRequests";
-import type {CommonResponse} from "@/http/ResponseTypes/CommonResponseType";
-import {GLOBAL_INFO_URL} from "@/http/URL";
-import {messageTip} from "@/util/utils";
+import { pinia } from '@/app/pinia'
+import { useGlobalStore } from '@/stores/global'
+import { fetchGlobalInfo } from '@/services/global'
+import { messageTip } from '@/util/utils'
+import { createAuthGuard } from './authGuard'
+
+declare module 'vue-router' {
+  interface RouteMeta {
+    requiresAuth?: boolean
+  }
+}
 
 const router = createRouter({
   history: createWebHistory(import.meta.env.BASE_URL),
@@ -77,7 +82,7 @@ const router = createRouter({
       path: '/tools',
       name: 'tools',
       component: () => import('@/views/ToolsView.vue'),
-      redirect(to) {
+      redirect() {
         return { name: 'excel' }
       },
       children: [
@@ -104,12 +109,12 @@ const router = createRouter({
       name: 'userHome',
       component: () => import('@/views/UserHomeView.vue'),
       meta: {
-        loginRequired: true
+        requiresAuth: true
       }
     },
     {
       path: '/notice',
-      redirect(to) {
+      redirect() {
         return { name: 'notice', params: { noticeType: 'comment' } }
       },
     },
@@ -121,27 +126,14 @@ const router = createRouter({
   ]
 })
 
-router.beforeEach(async (to, from, next) => {
-    // console.log(to)
-    // console.log(from)
-  if(to.meta.loginRequired) {
-    const globalStore = await getGlobalStore()
-    await checkLoginStatus(globalStore)
-    if(!globalStore.global.isLogin){
-      messageTip("请先登录", "warning")
-      await router.replace("/")
-    }else{
-      next()
-    }
-  }
-  next()
-})
+const globalStore = useGlobalStore(pinia)
 
-async function checkLoginStatus(globalStore: any)  {
-  await doGet<CommonResponse>(GLOBAL_INFO_URL, {})
-      .then((res) => {
-        globalStore.setGlobal(res.data.global)
-      })
-}
+router.beforeEach(
+  createAuthGuard({
+    loadGlobalInfo: fetchGlobalInfo,
+    updateGlobal: (global) => globalStore.setGlobal(global),
+    warn: (message) => messageTip(message, 'warning')
+  })
+)
 
 export default router
