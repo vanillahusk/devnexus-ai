@@ -7,6 +7,8 @@
       </div>
       <div class="app-footer__links">
         <RouterLink to="/about">项目介绍</RouterLink>
+        <RouterLink to="/architecture">系统架构</RouterLink>
+        <RouterLink to="/evidence">工程证据</RouterLink>
         <RouterLink to="/chat">AI 助手</RouterLink>
         <a
           href="https://github.com/vanillahusk/devnexus-ai"

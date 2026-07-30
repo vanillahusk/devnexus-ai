@@ -19,6 +19,7 @@ export interface ColumnArticlesResponseType{
    */
   readType: number
   comments: ArticleCommentType[]
+  pendingComments: ArticleCommentType[]
   hotComment: ArticleCommentType
   articleList: SimpleArticleType[]
   other: ArticleOtherType
@@ -31,6 +32,7 @@ export const defaultColumnArticlesResponse: ColumnArticlesResponseType = {
   article: {...defaultArticle},
   readType: 0,
   comments: [],
+  pendingComments: [],
   hotComment: defaultArticleComment,
   articleList: [],
   other: defaultArticleOther,

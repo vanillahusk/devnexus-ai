@@ -10,7 +10,8 @@ import type { ArticleType } from '@/http/ResponseTypes/ArticleType/ArticleType'
 export interface ArticleDetailResponse {
   article: ArticleType;
   comments: ArticleCommentType[]; // 类型未指定
-  hotComment: ArticleCommentType; // 类型未指定
+  pendingComments: ArticleCommentType[]; // 仅当前作者可见的待审核评论
+  hotComment: ArticleCommentType | null;
   author: UserStatisticInfo; // 类型未指定
   other: ArticleOtherType; // 类型未指定
   sideBarItems: SideBarItem[]; // 类型未指定
@@ -98,6 +99,7 @@ export const defaultArticleDetailResponse: ArticleDetailResponse = {
     childComments: [],
   },
   comments: [],
+  pendingComments: [],
   columnId: 0,
   sectionId: 0,
   commentPending: false,

@@ -96,6 +96,26 @@
         <RouterLink class="secondary-link" to="/chat">体验受控 Agent</RouterLink>
       </div>
     </section>
+
+    <section class="contribute-section page-shell">
+      <div class="section-copy">
+        <p class="eyebrow">OPEN FOR COLLABORATION</p>
+        <h2>这是一个持续演进的个人简历项目。</h2>
+        <p>
+          如果你对前端体验、自动化测试、低资源部署或检索评测感兴趣，
+          欢迎提交 Issue 与 Pull Request；需要交流项目或获取简历，也可以通过 GitHub 联系我。
+        </p>
+      </div>
+      <div class="contribute-grid">
+        <article v-for="item in contributionAreas" :key="item.title">
+          <span>{{ item.index }}</span>
+          <div>
+            <h3>{{ item.title }}</h3>
+            <p>{{ item.description }}</p>
+          </div>
+        </article>
+      </div>
+    </section>
   </main>
 
   <Footer />
@@ -148,9 +168,27 @@ const statuses = [
   },
   {
     level: 'progress',
-    status: '持续完善',
+    status: '首版完成',
     title: '前端作品集',
-    description: '社区主站正在统一视觉、错误状态、响应式布局与自动化测试。'
+    description: '作品集首页、系统架构、工程证据和社区主流程已经形成连续入口。'
+  }
+]
+
+const contributionAreas = [
+  {
+    index: '01',
+    title: '前端体验',
+    description: '移动端适配、交互细节、无障碍与真实 SSE 展示。'
+  },
+  {
+    index: '02',
+    title: '自动化测试',
+    description: '补充 Playwright 主流程与公开环境回归。'
+  },
+  {
+    index: '03',
+    title: '部署与文档',
+    description: '优化低资源启动、环境预检和新机器复现。'
   }
 ]
 
@@ -372,6 +410,44 @@ h1 {
   background: linear-gradient(135deg, #eae7ff, #e7faf6);
 }
 
+.contribute-section {
+  display: grid;
+  grid-template-columns: minmax(16rem, 0.8fr) minmax(0, 1.2fr);
+  gap: clamp(2rem, 8vw, 7rem);
+  align-items: start;
+  padding-top: clamp(5rem, 9vw, 8rem);
+}
+
+.contribute-grid {
+  display: grid;
+  gap: var(--space-3);
+}
+
+.contribute-grid article {
+  display: grid;
+  grid-template-columns: 2rem 1fr;
+  gap: var(--space-4);
+  padding: var(--space-5);
+  border: 1px solid var(--color-border-subtle);
+  border-radius: var(--radius-lg);
+  background: var(--color-surface);
+}
+
+.contribute-grid article > span {
+  color: var(--color-brand);
+  font-family: var(--font-display);
+  font-size: 0.72rem;
+  font-weight: 800;
+}
+
+.contribute-grid h3 {
+  font-size: 1rem;
+}
+
+.contribute-grid p {
+  margin-top: var(--space-2);
+}
+
 .run-section > div:first-child {
   max-width: 44rem;
 }
@@ -407,7 +483,8 @@ h1 {
 
 @media (max-width: 900px) {
   .about-hero,
-  .about-section {
+  .about-section,
+  .contribute-section {
     grid-template-columns: 1fr;
   }
 

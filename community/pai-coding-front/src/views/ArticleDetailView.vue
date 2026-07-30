@@ -20,7 +20,7 @@
       <div class="col-body pg-2-article" id="article-detail-body-div">
         <div class="com-3-layout">
           <div class="layout-main">
-            <ArticleDetail :global="global" :article-vo="articleVo" />
+            <ArticleDetail :article-vo="articleVo" />
 
             <ArticleAiAssistant
               :article-id="Number(articleId)"
@@ -29,6 +29,7 @@
 
             <CommentList
               :comments="articleVo.comments"
+              :pending-comments="articleVo.pendingComments"
               :hot-comment="articleVo.hotComment"
               :article="articleVo.article"
             />

@@ -25,6 +25,8 @@ jobs:
       - run: npm run type-check
       - run: npm test
       - run: npm run build
+      - run: npx playwright install --with-deps chromium
+      - run: npm run test:e2e
 
   react-console:
     runs-on: ubuntu-latest

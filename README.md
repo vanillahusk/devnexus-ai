@@ -24,6 +24,35 @@ DevNexus AI 是我的个人学习与求职作品集，包含技术社区、微�
   <img src="assets/devnexus-overview.svg" alt="DevNexus AI 项目组成" width="100%" />
 </p>
 
+## 项目预览
+
+<table>
+  <tr>
+    <td width="50%">
+      <img src="assets/screenshots/portfolio-home.jpg" alt="DevNexus AI 作品集首页" />
+    </td>
+    <td width="50%">
+      <img src="assets/screenshots/portfolio-architecture.jpg" alt="DevNexus AI 系统架构页" />
+    </td>
+  </tr>
+  <tr>
+    <td align="center"><strong>社区与工程指标</strong></td>
+    <td align="center"><strong>服务边界与核心链路</strong></td>
+  </tr>
+  <tr>
+    <td width="50%">
+      <img src="assets/screenshots/portfolio-article.jpg" alt="DevNexus AI 社区文章" />
+    </td>
+    <td width="50%">
+      <img src="assets/screenshots/portfolio-agent.jpg" alt="DevNexus AI 受控 Agent 引用回答" />
+    </td>
+  </tr>
+  <tr>
+    <td align="center"><strong>原创工程文章</strong></td>
+    <td align="center"><strong>受控 Agent 与引用来源</strong></td>
+  </tr>
+</table>
+
 ## 项目组成
 
 | 目录 | 内容 | 使用说明 |
@@ -37,6 +66,7 @@ DevNexus AI 是我的个人学习与求职作品集，包含技术社区、微�
 ## 快速导航
 
 - [环境要求](#环境要求)
+- [项目预览](#项目预览)
 - [启动社区服务](#启动社区服务)
 - [启动-rag-服务](#启动-rag-服务)
 - [停止服务](#停止服务)
@@ -198,7 +228,12 @@ cd ../ragent
 
 ## 当前状态与参与贡献
 
-本项目的社区后端、微服务、可靠消息和 RAG/Agent 主链路已经具备可运行实现。Vue 社区作品集与 React RAG 管理台已完成首轮工程化和界面整理；真实浏览器 E2E、社区 Agent 流式输出及更多移动端细节仍在持续完善。
+本项目的社区后端、微服务、可靠消息和 RAG/Agent 主链路已经具备可运行实现。Vue
+社区作品集已覆盖桌面、平板和手机布局，并使用 Playwright 验证“首页 → 文章 →
+Agent 回答 → 引用原文”公开流程；React RAG 管理台已完成首轮工程化和界面整理。
+
+社区 Agent 当前默认使用同步门面。Vue 已具备标准 SSE 解析和协作取消客户端，但真实
+模型流与服务端取消句柄仍在完善，仓库不会用浏览器拆字效果冒充真实流式输出。
 
 如果你擅长 Vue、React、UI 设计或前后端联调，欢迎提交 Issue 或 Pull Request。功能建议、问题反馈和代码优化也同样欢迎。
 

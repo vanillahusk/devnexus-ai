@@ -96,7 +96,8 @@ defineOptions({
 const navigation = [
   { label: '首页', to: '/' },
   { label: '文章', to: '/#articles' },
-  { label: '教程', to: '/column' },
+  { label: '系统架构', to: '/architecture' },
+  { label: '工程证据', to: '/evidence' },
   { label: 'AI 助手', to: '/chat' },
   { label: '项目介绍', to: '/about' }
 ]

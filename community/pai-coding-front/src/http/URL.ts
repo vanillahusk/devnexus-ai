@@ -36,6 +36,7 @@ export const COMMENT_SUBMIT_URL = "comment/api/save"
 // AI 知识助手
 export const AI_ASSISTANT_ASK_URL = "/ai/assistant/api/ask"
 export const AI_AGENT_QUERY_URL = "/ai/agent/api/query"
+export const AI_AGENT_STREAM_URL = "/ai/agent/api/stream"
 
 
 // ############# 首页相关的请求 #############

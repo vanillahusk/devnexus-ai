@@ -45,6 +45,28 @@
       </div>
     </div>
 
+    <section
+      v-if="visiblePendingComments.length > 0"
+      class="pending-comment-section"
+      aria-live="polite"
+    >
+      <div class="pending-comment-section__heading">
+        <strong>我的待审核评论</strong>
+        <span>仅你可见，通过审核后会进入公开评论区</span>
+      </div>
+      <article
+        v-for="comment in visiblePendingComments"
+        :key="comment.key"
+        class="pending-comment-card"
+      >
+        <div class="pending-comment-card__meta">
+          <span>{{ comment.userName }}</span>
+          <em>待审核</em>
+        </div>
+        <p>{{ comment.content }}</p>
+      </article>
+    </section>
+
     <!-- 评论列表 -->
     <div :class="{'no-comment-box': comments && comments.length > 0}">
       <!-- TODO 热门评论中给评论点赞后，下方的全部评论的点赞数没有同时更新；反之亦然  -->
@@ -132,7 +154,7 @@
 import type { ArticleDetailResponse } from '@/http/ResponseTypes/ArticleDetailResponseType'
 import CommentItem from '@/components/comment/CommentItem.vue'
 import { useGlobalStore } from '@/stores/global'
-import { inject, ref } from 'vue'
+import { computed, inject, ref, watch } from 'vue'
 import { ChatSquare } from '@element-plus/icons-vue'
 import { messageTip } from '@/util/utils'
 import type { ArticleCommentType } from '@/http/ResponseTypes/CommentType/ArticleCommentType'
@@ -149,6 +171,44 @@ const updateArticleComment = inject<(response: ArticleDetailResponse) => void>('
 
 const isCommenting = ref(false)
 
+const props = defineProps<{
+  hotComment: ArticleCommentType | null,
+  comments: ArticleCommentType[],
+  pendingComments: ArticleCommentType[],
+  article: ArticleType,
+}>()
+
+interface PendingCommentPreview {
+  key: string
+  content: string
+  userName: string
+}
+
+const optimisticPendingComments = ref<PendingCommentPreview[]>([])
+
+const visiblePendingComments = computed<PendingCommentPreview[]>(() => [
+  ...optimisticPendingComments.value,
+  ...props.pendingComments.map((comment) => ({
+    key: `server-${comment.commentId}`,
+    content: comment.commentContent,
+    userName: comment.userName || global.user?.userName || '我'
+  }))
+])
+
+watch(
+  () => [props.pendingComments, props.comments] as const,
+  ([serverPendingComments, publicComments]) => {
+    const persistedContents = new Set(
+      [...serverPendingComments, ...publicComments]
+        .map((comment) => comment.commentContent)
+    )
+    optimisticPendingComments.value = optimisticPendingComments.value.filter(
+      (comment) => !persistedContents.has(comment.content)
+    )
+  },
+  { deep: true }
+)
+
 const commentSubmit = () => {
   if (!global.isLogin) {
     if (showLoginDialog) {
@@ -158,11 +218,23 @@ const commentSubmit = () => {
     }
     return
   }
+  const submittedContent = textarea.value.trim()
+  if (!submittedContent || isCommenting.value) {
+    return
+  }
+  isCommenting.value = true
   submitComment({
     articleId: props.article.articleId,
-    commentContent: textarea.value,
+    commentContent: submittedContent,
   }).then((response) => {
-    messageTip(response.result?.commentPending ? '评论已提交，稍后展示' : '评论成功', 'success')
+    if (response.result?.commentPending) {
+      optimisticPendingComments.value.unshift({
+        key: `local-${Date.now()}`,
+        content: submittedContent,
+        userName: global.user?.userName || '我'
+      })
+    }
+    messageTip(response.result?.commentPending ? '评论已提交，正在等待审核' : '评论成功', 'success')
     textarea.value = ''
     if (updateArticleComment) {
       updateArticleComment(response.result)
@@ -171,14 +243,10 @@ const commentSubmit = () => {
     }
   }).catch(() => {
     messageTip('评论失败', 'error')
+  }).finally(() => {
+    isCommenting.value = false
   })
 }
-
-const props = defineProps<{
-  hotComment: ArticleCommentType,
-  comments: ArticleCommentType[],
-  article: ArticleType,
-}>()
 
 // 评论区的内容
 const textarea = ref('')
@@ -187,5 +255,54 @@ const textarea = ref('')
 </script>
 
 <style scoped>
+.pending-comment-section {
+  margin: 1rem 0;
+  padding: 1rem;
+  border: 1px solid #f3d39a;
+  border-radius: 10px;
+  background: #fffaf0;
+}
+
+.pending-comment-section__heading {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: baseline;
+  justify-content: space-between;
+  gap: 0.4rem 1rem;
+  color: #7a4d0b;
+}
+
+.pending-comment-section__heading span {
+  color: #9a6b25;
+  font-size: 0.82rem;
+}
+
+.pending-comment-card {
+  margin-top: 0.75rem;
+  padding: 0.85rem 1rem;
+  border-radius: 8px;
+  background: #fff;
+}
+
+.pending-comment-card__meta {
+  display: flex;
+  justify-content: space-between;
+  color: #646464;
+  font-size: 0.84rem;
+}
+
+.pending-comment-card__meta em {
+  padding: 0.1rem 0.5rem;
+  border-radius: 999px;
+  background: #fff0cf;
+  color: #9a6200;
+  font-style: normal;
+}
+
+.pending-comment-card p {
+  margin: 0.65rem 0 0;
+  color: #303030;
+  white-space: pre-wrap;
+}
 
 </style>

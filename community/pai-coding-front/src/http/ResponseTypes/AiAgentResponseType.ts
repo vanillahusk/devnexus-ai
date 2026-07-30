@@ -36,3 +36,50 @@ export interface AiAgentReply {
   citations: AgentCitation[]
   usage: AgentUsageSummary
 }
+
+export type AgentStreamPhase =
+  | 'PLANNING'
+  | 'RETRIEVING'
+  | 'RERANKING'
+  | 'GENERATING'
+  | 'FALLBACK'
+
+export type AgentStreamFinishReason =
+  | 'COMPLETED'
+  | 'CANCELLED'
+  | 'CONTROLLED_FAILURE'
+  | 'TIMEOUT'
+
+export type AgentStreamEvent =
+  | {
+      type: 'accepted'
+      requestId: string
+      traceId: string
+    }
+  | {
+      type: 'status'
+      requestId: string
+      phase: AgentStreamPhase
+    }
+  | {
+      type: 'delta'
+      requestId: string
+      text: string
+    }
+  | {
+      type: 'result'
+      requestId: string
+      result: AiAgentReply
+    }
+  | {
+      type: 'error'
+      requestId?: string
+      code: string
+      message: string
+      retryable: boolean
+    }
+  | {
+      type: 'done'
+      requestId: string
+      finishReason: AgentStreamFinishReason
+    }

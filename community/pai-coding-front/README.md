@@ -9,7 +9,15 @@ DevNexus AI 的社区主站与作品集入口，基于 Vue 3、TypeScript、Vite
 - 面向登录用户的受控 Agent 问答和文章引用；
 - 只调用社区 Gateway，不在浏览器中保存 RAG 服务凭据。
 
-社区 Agent 门面目前使用同步 HTTP。页面的“停止等待”会取消当前浏览器请求，但不代表服务端任务已撤销；真实 SSE 和服务端协作取消仍是后续能力。
+社区 Agent 门面目前默认使用同步 HTTP。前端已经实现 POST SSE 解析、增量文本和协作取消
+客户端，但只有后端真实流端点通过验证后才能启用：
+
+```dotenv
+VITE_AGENT_STREAM_ENABLED=false
+```
+
+关闭该开关时，“停止等待”只取消当前浏览器请求，不代表服务端任务已撤销。项目不会把
+同步回答在浏览器端拆字后称为真实模型流式。
 
 ## 本地运行
 
@@ -38,10 +46,13 @@ VITE_WS_BASE_URL=ws://localhost:10010
 npm run type-check
 npm run lint
 npm test
+npm run test:e2e
 npm run build
 ```
 
-当前测试覆盖请求拦截器、登录守卫、Agent 成功/失败/取消状态以及引用渲染。
+Vitest 覆盖请求拦截器、登录守卫、Agent 成功/失败/取消、SSE 分帧和引用渲染。
+Playwright 使用确定性 API Fixture 验证公开主流程和桌面、平板、手机布局；它不替代
+真实 RAG/模型端到端证据。
 
 ## 目录
 

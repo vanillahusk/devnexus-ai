@@ -163,7 +163,7 @@
       <el-divider></el-divider>
       <div class="flex justify-center">
         <el-button :loading="saveBtnLoading" type="success" @click="postArticle('post')" style="width: 80px">发布</el-button>
-        <el-button type="info" @click="postArticle('save')">存草稿</el-button>
+        <el-button :disabled="saveBtnLoading" type="info" @click="postArticle('save')">存草稿</el-button>
       </div>
 
     </template>
@@ -394,38 +394,62 @@ const extractAbstract = () => {
 // 点击按钮后无法再次点击，防止重复提交
 const saveBtnLoading = ref(false)
 const articleId = ref(0)
-const postArticle = (actionType: 'save' | 'post') => {
-  saveBtnLoading.value = true
+const validateForm = async (form: FormInstance | undefined): Promise<boolean> => {
+  if (!form) {
+    return false
+  }
+  try {
+    await form.validate()
+    return true
+  } catch {
+    return false
+  }
+}
+
+const postArticle = async (actionType: 'save' | 'post') => {
+  if (saveBtnLoading.value) {
+    return
+  }
   if(text.value.length < 50){
     messageTip('正文内容不得少于50字', 'warning')
     return
   }
-  doPost<CommonResponse>(ARTICLE_UPLOAD_URL, {
-    articleId: articleId.value,
-    title: titleForm.title,
-    categoryId: articleInfoForm.category,
-    tagIds: articleInfoForm.tags,
-    summary: articleInfoForm.abstract,
-    content: text.value,
-    cover: cover.value? cover.value : undefined,
-    articleType: ArticleTypeEnum.BLOG,
-    source: DocumentSourceTypeEnum.ORIGINAL,
-    actionType: actionType,
-  })
-    .then((response) => {
-      console.log(response)
-      messageTip('发布成功', 'success')
-      setTimeout(() => {
-        router.push(`/`)
-      }, 1000)
+  const [titleValid, articleInfoValid] = await Promise.all([
+    validateForm(titleFormRef.value),
+    validateForm(articleInfoFormRef.value)
+  ])
+  if (!titleValid || !articleInfoValid) {
+    messageTip('请完善标题、分类、标签和摘要', 'warning')
+    return
+  }
+
+  saveBtnLoading.value = true
+  try {
+    const response = await doPost<CommonResponse<string>>(ARTICLE_UPLOAD_URL, {
+      articleId: articleId.value,
+      title: titleForm.title,
+      categoryId: articleInfoForm.category,
+      tagIds: articleInfoForm.tags,
+      summary: articleInfoForm.abstract,
+      content: text.value,
+      cover: cover.value? cover.value : undefined,
+      articleType: ArticleTypeEnum.BLOG,
+      source: DocumentSourceTypeEnum.ORIGINAL,
+      actionType: actionType,
     })
-    .catch((error) => {
-      console.error(error)
-    })
-    .finally(() => {
-      saveBtnLoading.value = true
-      submitDialogVisible.value = false
-    })
+    messageTip(actionType === 'post' ? '发布成功' : '草稿已保存', 'success')
+    submitDialogVisible.value = false
+    if (actionType === 'post') {
+      await router.push(`/article/detail/${response.data.result}`)
+    } else {
+      await router.push('/')
+    }
+  } catch (error) {
+    console.error(error)
+    messageTip(error instanceof Error ? error.message : '文章保存失败，请稍后重试', 'error')
+  } finally {
+    saveBtnLoading.value = false
+  }
 }
 
 

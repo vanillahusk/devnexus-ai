@@ -42,7 +42,12 @@
             <ColumnArticleDetail :article-vo="vo"></ColumnArticleDetail>
             <!--  评论  -->
             <div id="commentDiv">
-              <CommentList :comments="vo.comments" :hot-comment="vo.hotComment" :article="vo.article"></CommentList>
+              <CommentList
+                :comments="vo.comments"
+                :pending-comments="vo.pendingComments"
+                :hot-comment="vo.hotComment"
+                :article="vo.article"
+              ></CommentList>
             </div>
           </div>
         </div>

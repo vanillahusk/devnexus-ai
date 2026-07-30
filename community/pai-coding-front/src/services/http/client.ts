@@ -31,7 +31,7 @@ interface HttpClientOptions {
 
 let loginPromptVisible = false
 
-function readToken(): string | null {
+export function readToken(): string | null {
   return (
     window.sessionStorage.getItem(getTokenName()) ??
     window.localStorage.getItem(getTokenName())

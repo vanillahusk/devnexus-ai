@@ -21,5 +21,7 @@ export const runtimeConfig = Object.freeze({
   excelServiceBaseUrl: trimTrailingSlash(
     import.meta.env.VITE_EXCEL_SERVICE_BASE_URL?.trim() ?? ''
   ),
-  requestTimeoutMs: Number(import.meta.env.VITE_REQUEST_TIMEOUT_MS ?? 15_000)
+  requestTimeoutMs: Number(import.meta.env.VITE_REQUEST_TIMEOUT_MS ?? 15_000),
+  agentStreamEnabled:
+    import.meta.env.VITE_AGENT_STREAM_ENABLED?.trim().toLowerCase() === 'true'
 })

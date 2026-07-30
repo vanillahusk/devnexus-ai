@@ -22,7 +22,7 @@
             体验 AI 助手
             <span aria-hidden="true">→</span>
           </RouterLink>
-          <a class="secondary-action" href="#architecture">查看系统架构</a>
+          <a class="secondary-action" href="#articles">浏览社区文章</a>
         </div>
         <div class="hero__stack" aria-label="核心技术栈">
           <span>Spring Boot 3</span>
@@ -99,6 +99,51 @@
       />
     </section>
 
+    <section id="articles" class="articles-section page-shell">
+      <div class="section-heading section-heading--articles">
+        <div>
+          <p>COMMUNITY CONTENT</p>
+          <h2>社区文章</h2>
+        </div>
+        <span>文章内容同时也是 RAG 知识索引的事实来源。</span>
+      </div>
+
+      <div v-if="articleError" class="load-state" role="alert">
+        <div>
+          <strong>社区数据暂时不可用</strong>
+          <p>{{ articleError }}。作品集能力介绍仍可正常浏览。</p>
+        </div>
+        <button type="button" @click="loadArticles">重新加载</button>
+      </div>
+
+      <template v-else>
+        <el-skeleton :loading="articlesLoading" animated :rows="6">
+          <NavBar v-if="categories.length" :categories="categories" />
+          <RecommendArticle
+            v-if="topArticles.length"
+            :top-articles="topArticles"
+          />
+          <div class="article-panel">
+            <ArticleList :articles="articles.records" />
+            <el-empty
+              v-if="!articles.records.length"
+              description="暂无已发布文章"
+            />
+            <el-pagination
+              v-if="articles.pages > 1"
+              v-model:current-page="currentPage"
+              v-model:page-size="pageSize"
+              :page-sizes="[10, 20]"
+              :page-count="articles.pages"
+              layout="sizes, prev, pager, next"
+              @update:page-size="loadArticles"
+              @update:current-page="loadArticles"
+            />
+          </div>
+        </el-skeleton>
+      </template>
+    </section>
+
     <section id="architecture" class="section page-shell">
       <div class="section-heading">
         <div>
@@ -145,50 +190,26 @@
       </div>
     </section>
 
-    <section id="articles" class="articles-section page-shell">
-      <div class="section-heading section-heading--articles">
-        <div>
-          <p>COMMUNITY CONTENT</p>
-          <h2>社区文章</h2>
-        </div>
-        <span>文章内容同时也是 RAG 知识索引的事实来源。</span>
+    <section class="portfolio-bridge page-shell">
+      <div>
+        <p>EXPLORE THE ENGINEERING</p>
+        <h2>从架构决策，一直看到验证结果。</h2>
+        <span>
+          先理解为什么这样设计，再查看压测、故障回归和真实模型评测证据。
+        </span>
       </div>
-
-      <div v-if="articleError" class="load-state" role="alert">
-        <div>
-          <strong>社区数据暂时不可用</strong>
-          <p>{{ articleError }}。作品集能力介绍仍可正常浏览。</p>
-        </div>
-        <button type="button" @click="loadArticles">重新加载</button>
+      <div class="portfolio-bridge__actions">
+        <RouterLink to="/architecture">
+          查看完整架构
+          <span aria-hidden="true">→</span>
+        </RouterLink>
+        <RouterLink to="/evidence">
+          查看工程证据
+          <span aria-hidden="true">↗</span>
+        </RouterLink>
       </div>
-
-      <template v-else>
-        <el-skeleton :loading="articlesLoading" animated :rows="6">
-          <NavBar v-if="categories.length" :categories="categories" />
-          <RecommendArticle
-            v-if="topArticles.length"
-            :top-articles="topArticles"
-          />
-          <div class="article-panel">
-            <ArticleList :articles="articles.records" />
-            <el-empty
-              v-if="!articles.records.length"
-              description="暂无已发布文章"
-            />
-            <el-pagination
-              v-if="articles.pages > 1"
-              v-model:current-page="currentPage"
-              v-model:page-size="pageSize"
-              :page-sizes="[10, 20]"
-              :page-count="articles.pages"
-              layout="sizes, prev, pager, next"
-              @update:page-size="loadArticles"
-              @update:current-page="loadArticles"
-            />
-          </div>
-        </el-skeleton>
-      </template>
     </section>
+
   </main>
 
   <Footer />
@@ -722,6 +743,72 @@ onMounted(loadArticles)
   padding-top: clamp(5rem, 10vw, 8rem);
 }
 
+.portfolio-bridge {
+  display: flex;
+  align-items: end;
+  justify-content: space-between;
+  gap: var(--space-10);
+  margin-top: var(--space-16);
+  padding: clamp(2rem, 5vw, 4rem);
+  border: 1px solid rgb(99 91 255 / 12%);
+  border-radius: var(--radius-xl);
+  background:
+    radial-gradient(circle at 90% 10%, rgb(0 168 143 / 14%), transparent 16rem),
+    linear-gradient(135deg, #eeecff, #f7f8ff);
+}
+
+.portfolio-bridge > div:first-child {
+  max-width: 43rem;
+}
+
+.portfolio-bridge p {
+  color: var(--color-brand-strong);
+  font-size: 0.68rem;
+  font-weight: 780;
+  letter-spacing: 0.14em;
+}
+
+.portfolio-bridge h2 {
+  margin-top: var(--space-3);
+  font-family: var(--font-display);
+  font-size: clamp(1.8rem, 4vw, 3rem);
+  font-weight: 760;
+  letter-spacing: -0.045em;
+}
+
+.portfolio-bridge > div:first-child > span {
+  display: block;
+  margin-top: var(--space-4);
+  color: var(--color-text-secondary);
+  font-size: 0.9rem;
+  line-height: 1.8;
+}
+
+.portfolio-bridge__actions {
+  display: grid;
+  flex: 0 0 auto;
+  gap: var(--space-3);
+}
+
+.portfolio-bridge__actions a {
+  display: flex;
+  min-width: 12rem;
+  justify-content: space-between;
+  padding: 0.8rem 1rem;
+  border: 1px solid rgb(24 32 51 / 12%);
+  border-radius: var(--radius-sm);
+  color: var(--color-text);
+  font-size: 0.8rem;
+  font-weight: 700;
+  text-decoration: none;
+}
+
+.portfolio-bridge__actions a:first-child {
+  border-color: var(--color-text);
+  background: var(--color-text);
+  color: white;
+}
+
 .section-heading--articles {
   margin-bottom: var(--space-6);
 }
@@ -868,6 +955,15 @@ onMounted(loadArticles)
   .load-state {
     align-items: flex-start;
     flex-direction: column;
+  }
+
+  .portfolio-bridge {
+    align-items: stretch;
+    flex-direction: column;
+  }
+
+  .portfolio-bridge__actions a {
+    min-width: 0;
   }
 }
 </style>
