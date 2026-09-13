@@ -40,12 +40,16 @@ DevNexus AI 是我的个人学习与求职作品集，包含技术社区、微�
     <td align="center"><strong>原创工程文章</strong></td>
   </tr>
   <tr>
-    <td colspan="2">
+    <td width="50%">
       <img src="assets/screenshots/portfolio-architecture.png" alt="DevNexus AI 系统架构页" />
+    </td>
+    <td width="50%">
+      <img src="assets/screenshots/portfolio-agent.jpg" alt="DevNexus AI 受控 Agent 引用回答" />
     </td>
   </tr>
   <tr>
-    <td colspan="2" align="center"><strong>服务边界与核心链路</strong></td>
+    <td align="center"><strong>服务边界与核心链路</strong></td>
+    <td align="center"><strong>受控 Agent 与引用来源</strong></td>
   </tr>
 </table>
 
