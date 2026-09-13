@@ -29,27 +29,23 @@ DevNexus AI 是我的个人学习与求职作品集，包含技术社区、微�
 <table>
   <tr>
     <td width="50%">
-      <img src="assets/screenshots/portfolio-home.jpg" alt="DevNexus AI 作品集首页" />
+      <img src="assets/screenshots/portfolio-home.png" alt="DevNexus AI 作品集首页" />
     </td>
     <td width="50%">
-      <img src="assets/screenshots/portfolio-architecture.jpg" alt="DevNexus AI 系统架构页" />
+      <img src="assets/screenshots/portfolio-article.png" alt="DevNexus AI 社区文章" />
     </td>
   </tr>
   <tr>
     <td align="center"><strong>社区与工程指标</strong></td>
-    <td align="center"><strong>服务边界与核心链路</strong></td>
-  </tr>
-  <tr>
-    <td width="50%">
-      <img src="assets/screenshots/portfolio-article.jpg" alt="DevNexus AI 社区文章" />
-    </td>
-    <td width="50%">
-      <img src="assets/screenshots/portfolio-agent.jpg" alt="DevNexus AI 受控 Agent 引用回答" />
-    </td>
-  </tr>
-  <tr>
     <td align="center"><strong>原创工程文章</strong></td>
-    <td align="center"><strong>受控 Agent 与引用来源</strong></td>
+  </tr>
+  <tr>
+    <td colspan="2">
+      <img src="assets/screenshots/portfolio-architecture.png" alt="DevNexus AI 系统架构页" />
+    </td>
+  </tr>
+  <tr>
+    <td colspan="2" align="center"><strong>服务边界与核心链路</strong></td>
   </tr>
 </table>
 
