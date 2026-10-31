@@ -91,12 +91,12 @@ import MetricCard from '@/shared/ui/MetricCard.vue'
 
 const metrics = [
   {
-    value: '102.95',
+    value: '1029.5',
     label: '点赞稳定档 RPS',
     note: 'P99 17.98ms · 三轮中位数'
   },
   {
-    value: '52.42',
+    value: '524.2',
     label: '评论稳定档 RPS',
     note: 'P99 42.73ms · 8664/8664 落库'
   },
