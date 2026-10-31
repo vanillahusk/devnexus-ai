@@ -90,71 +90,11 @@ import LoginDialog from '@/components/dialog/LoginDialog.vue'
 import MetricCard from '@/shared/ui/MetricCard.vue'
 
 const metrics = [
-  {
-    value: '1029.5',
-    label: '点赞稳定档 RPS',
-    note: 'P99 17.98ms · 三轮中位数'
-  },
-  {
-    value: '524.2',
-    label: '评论稳定档 RPS',
-    note: 'P99 42.73ms · 8664/8664 落库'
-  },
-  {
-    value: '91.98%',
-    label: 'Reranker Recall@5',
-    note: '150 篇文章 · 150 题困难集'
-  },
-  {
-    value: '90.11%',
-    label: 'Reranker MRR',
-    note: '真实 Qwen3 Embedding 与 Reranker'
-  }
+  
 ]
 
 const evidence = [
-  {
-    level: 'L4',
-    name: '点赞可靠链路',
-    method: '100 RPS 稳定档三轮；300 RPS 边界轮；同时核对 Redis 队列、MySQL 与 Outbox。',
-    result: '稳定档 102.95 RPS，P99 17.98ms；边界积压约 21 秒归零。',
-    boundary: '代表当前 WSL 单机环境，不是分布式集群容量上限。'
-  },
-  {
-    level: 'L4',
-    name: '评论可靠链路',
-    method: '当前 RocketMQ → MySQL 直写链路，20/50/100 RPS 阶梯与三轮稳定档。',
-    result: '稳定档 52.42 RPS，P99 42.73ms；8664/8664 条最终落库，重复事件为 0。',
-    boundary: '100 RPS 暴露客户端超时后的请求级幂等改进点。'
-  },
-  {
-    level: 'L3',
-    name: '微服务与 Trace',
-    method: '真实启动 Gateway、认证、消息与主站，查询 SkyWalking Trace V2 和服务拓扑。',
-    result: 'HTTP、OpenFeign 与 RocketMQ 异步段可通过同一 Trace 关联。',
-    boundary: '证明链路可追踪，不代表持续高负载下的 OAP 容量。'
-  },
-  {
-    level: 'L4',
-    name: 'RAG 检索质量',
-    method: '150 篇文章、150 道困难问题，比较 BM25、Dense、Hybrid 与 Reranker。',
-    result: 'Reranker Recall@5 0.9198，MRR 0.9011，引用命中率 0.9556。',
-    boundary: '困难集为冻结合成评测集，拒答阈值仍存在继续校准空间。'
-  },
-  {
-    level: 'L3',
-    name: '受控 Agent',
-    method: '真实 Planner、Qwen3 Embedding、pgvector、Reranker 与 HY3 生成链路。',
-    result: '端到端 1/1 通过，耗时 9.41 秒，完成检索、精排和合法引用。',
-    boundary: '证明单次完整链路成立，不外推为长期模型可用性或生产 P95。'
-  },
-  {
-    level: 'L2',
-    name: '故障回归',
-    method: '零服务回归覆盖降级、舱壁、重复乱序、索引屏障、Agent 越权与循环。',
-    result: 'Ragent、社区与 AIGC 共 52 个用例，34 秒完成，0 失败。',
-    boundary: '属于组件与进程内验证，真实依赖停止恢复单独按 L3/L4 记录。'
-  }
+  
 ]
 
 const levels = [
